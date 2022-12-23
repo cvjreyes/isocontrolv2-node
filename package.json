@@ -1,0 +1,23 @@
+{
+  "name": "isocontrolv2-node",
+  "version": "1.0.0",
+  "description": "isocontrolv2 node",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cvjreyes/isocontrolv2-node.git"
+  },
+  "author": "Jorge, Sean, Toni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cvjreyes/isocontrolv2-node/issues"
+  },
+  "homepage": "https://github.com/cvjreyes/isocontrolv2-node#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
