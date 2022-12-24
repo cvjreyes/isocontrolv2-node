@@ -1,17 +1,12 @@
 const router = require("express").Router(),
-  users = require("./user.controller");
+  controller = require("./user.controller"),
+  { checkAuth } = require("../../middlewares/checkAuth");
 
-// // Create a new user
-// router.post("/api/user", users.create);
+router.get("/find_all", controller.findAll);
 
-// Retrieve all users
-// // router.get("/api/users", users.findAll); OLD
-router.get("/findAll", users.findAll);
+router.get("/get_user_info", checkAuth, controller.getUserInfo);
 
-// Retrieve a single user with userId
-router.get("/findOne/:email", users.findOne);
-
-router.post("/login", users.login);
+router.post("/login", controller.login);
 
 // router.post("/api/user/getPassword", users.getPassword);
 
