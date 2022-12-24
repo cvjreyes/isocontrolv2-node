@@ -1,74 +1,59 @@
-const { findAll, getOneUser } = require("./user.services");
+const {
+  findAllUsersService,
+  getUserService,
+  checkIfUserExistsService,
+} = require("./user.services");
+const validator = require("validator");
+const { validatePassword } = require("./user.validations");
+const { send } = require("../../helpers/send");
+const { createToken } = require("../../helpers/token");
 
-// // Create and Save a new user
-// exports.create = (req, res) => {
-//   // Validate request
-//   if (!req.body) {
-//     res.status(400).send({
-//       message: "Content can not be empty!",
-//     });
-//   }
+// Create a user
+// * move to helpers if ever used
+const createUserObj = (user) => ({
+  name: user.name,
+  email: user.email,
+  password: user.password,
+  remember_token: user.remember_token,
+  created_at: user.created_at,
+  updated_at: user.updated_at,
+});
 
-//   // Create a user
-//   const user = new User({
-//     name: req.body.name,
-//     email: req.body.email,
-//     password: req.body.password,
-//     remember_token: req.body.remember_token,
-//     created_at: req.body.created_at,
-//     updated_at: req.body.updated_at,
-//   });
-
-//   // Save user in the database
-//   User.create(user, (err, data) => {
-//     if (err)
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while creating the user.",
-//       });
-//     else res.send(data);
-//   });
-// };
-
-// Retrieve all users from the database.
 exports.findAll = async (req, res) => {
   try {
-    const users = await findAll();
-    res.send({ ok: true, data: users });
+    const users = await findAllUsersService();
+    return send(res, true, users);
   } catch (err) {
     console.error(err);
-    res.send({ ok: false, err });
+    return send(res, false, err);
   }
 };
 
-// Find a single user with a userId
-exports.findOne = async (req, res) => {
-  const { email } = req.params;
+exports.getUserInfo = async (req, res) => {
   try {
-    const user = await getOneUser(email);
-    res.send({ ok: true, data: user });
+    const { user_id } = req;
+    const user = await getUserService(user_id);
+    return send(res, true, user);
   } catch (err) {
     console.error(err);
-    res.send({ ok: false, err });
   }
 };
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("email: ", email);
-
   try {
-    // find user
-    const user = await getOneUser(email);
-    console.log("user: ", user);
-    // if no user return invlaid credentials
-    if (!user) return res.send({ ok: false, data: "Invalid credentials" });
-    // else find ( and validate ) password
-    // const validated = validatePassword();
-    // if validated return ok
-    // else return invlaid credentials
-    res.send({ ok: true, data: "something" });
+    if (!email || !password) return send(res, false, "Please, fill all fields");
+    const validatedEmail = validator.isEmail(email);
+    if (!validatedEmail) return send(res, false, "Invalid credentials");
+    const user = await checkIfUserExistsService(email);
+    if (!user) return send(res, false, "Invalid credentials");
+    const validatedPassword = validatePassword(password, user.password);
+    if (!validatedPassword) return send(res, false, "Invalid credentials");
+    const token = createToken(user.id);
+    delete user.password;
+    return send(res, true, { ...user, token });
   } catch (err) {
-    console.error(err) + res.send({ ok: false, err });
+    console.error(err) + send(res, false, err);
   }
 };
 

@@ -1,0 +1,3 @@
+- create readme
+- replace all users created_at and updated_at null || undefined || 0:00:00 => Date.now() TO AVOID ERRORS
+- no actual need for token to be saved into db, jwt handles it for you
