@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "nodemon",
+    "start-prod": "pm2 start server.js --max-memory-restart 100 --name node-speech",
+    "stop": "pm2 stop server.js"
   },
   "repository": {
     "type": "git",
