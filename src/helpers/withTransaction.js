@@ -1,4 +1,4 @@
-const pool = require("../db2");
+const pool = require("../../config/db");
 
 async function withTransaction(callback) {
   let conn = null;
