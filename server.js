@@ -27,6 +27,10 @@ const apiLimiter = rateLimit({
 app.use(apiLimiter);
 
 app.use("/users", require("./src/main/users/user.routes"));
+app.use("/feed", require("./src/main/feed/feed.routes"));
+app.use("/lines", require("./src/main/lines/lines.routes"));
+app.use("/ifd", require("./src/main/ifd/ifd.routes"));
+app.use("/ifc", require("./src/main/ifc/ifc.routes"));
 
 // 404 HANDLING
 app.use("*", (req, res) => {

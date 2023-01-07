@@ -1,0 +1,3 @@
+- currentProgressISO... c viene
+- revisar el get ifd progress
+- que es NODE_MMDN
