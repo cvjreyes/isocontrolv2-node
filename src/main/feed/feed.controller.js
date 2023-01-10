@@ -31,8 +31,7 @@ exports.getFeedPipes = async (req, res) => {
 exports.submitFeedPipes = async (req, res) => {
   const { data } = req.body;
   try {
-    const rows = fillType(data);
-    await updateFeedPipesService(rows);
+    await updateFeedPipesService(data);
     send(res, true);
     // this.getFeedPipes(req, res);
   } catch (err) {
