@@ -20,7 +20,9 @@ exports.getProgressService = async (tableName) => {
 };
 
 exports.getFeedPipesService = async () => {
-  const [pipes] = await pool.query("SELECT * FROM feed_pipes_view ORDER BY id");
+  const [pipes] = await pool.query(
+    "SELECT * FROM feed_pipes_view ORDER BY id DESC"
+  );
   return pipes;
 };
 
@@ -43,4 +45,20 @@ exports.updateFeedPipesService = async (data) => {
 exports.deletePipe = async (id) => {
   const [pipes] = await pool.query("DELETE FROM feed_pipes WHERE id = ?", id);
   return pipes;
+};
+
+exports.addPipesService = async (data) => {
+  data.forEach(async (pipe) => {
+    const area_id = await getAreaId(pipe.area);
+    const line_refno = await getLineRefno(pipe.line_reference);
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query(
+          "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
+          [line_refno, area_id, pipe.diameter, pipe.train, pipe.status]
+        )
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong updating feed pipes");
+  });
 };

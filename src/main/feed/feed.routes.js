@@ -8,6 +8,8 @@ router.get("/get_feed_pipes", checkAuth, controller.getFeedPipes);
 
 router.post("/submit_feed_pipes", checkAuth, controller.submitFeedPipes);
 
+router.post("/add_pipes", checkAuth, controller.addPipes);
+
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
 module.exports = router;
