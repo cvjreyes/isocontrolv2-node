@@ -5,6 +5,7 @@ const {
   updateFeedPipesService,
   getProgressService,
   deletePipe,
+  addPipesService,
 } = require("./feed.services");
 
 exports.getProgress = async (req, res) => {
@@ -47,6 +48,17 @@ exports.deletePipe = async (req, res) => {
     // await updateFeedPipesService(rows);
     send(res, true, del);
   } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.addPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    addPipesService(data);
+    send(res, true);
+  } catch (er) {
     console.error(err);
     return send(res, false, err);
   }
