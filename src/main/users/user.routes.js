@@ -8,43 +8,8 @@ router.get("/get_user_info", checkAuth, controller.getUserInfo);
 
 router.post("/login", controller.login);
 
-// router.post("/api/user/getPassword", users.getPassword);
+router.get("/get_user_roles", checkAuth, controller.getUserRoles);
 
-// router.post("/user/changePassword", users.changePassword);
-
-// // Retrieve a single user with email
-// router.get("/api/userEmail/:userEmail", users.findOneByEmail);
-
-// router.get("/api/users/:tab", users.getUsersByTab);
-
-// // Retrieve a single user with username
-// router.post("/api/findByEmail", users.findOneByUsername);
-
-// // Update a user with userId
-// router.put("/api/user/:userId", users.update);
-
-// // Delete a user with userId
-// router.delete("/api/user/:userId", users.delete);
-
-// // Create a new user
-// router.delete("/api/users", users.deleteAll);
-
-// router.post("/createUser", users.createUser);
-
-// router.get("/usersWithRoles", users.usersWithRoles);
-
-// router.post("/users/manageRoles", users.manageRoles);
-
-// router.get("/downloadUsers", users.downloadUsers);
-
-// router.get("/notifications/:email", users.notifications);
-
-// router.post("/markAllNotificationsAsRead", users.markAllNotificationsAsRead);
-
-// router.post("/markNotificationAsRead", users.markNotificationAsRead);
-
-// router.post("/markNotificationAsUnread", users.markNotificationAsUnread);
-
-// router.post("/deleteNotification", users.deleteNotification);
+router.get("/get_owners", checkAuth, controller.getOwners);
 
 module.exports = router;
