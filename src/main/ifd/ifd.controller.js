@@ -1,5 +1,6 @@
 const pool = require("../../../config/db");
 const { send } = require("../../helpers/send");
+const { deletePipe, getPipesService } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
   try {
@@ -59,6 +60,28 @@ exports.getProgress = async (req, res) => {
     progress = ((weight / estimated_weight) * 100).toFixed(2);
     console.log(progress);
     return send(res, true, progress);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.getIFDPipes = async (req, res) => {
+  try {
+    const pipes = await getPipesService();
+    send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.deletePipe = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const del = await deletePipe(id);
+    // await updateFeedPipesService(rows);
+    send(res, true, del);
   } catch (err) {
     console.error(err);
     return send(res, false, err);

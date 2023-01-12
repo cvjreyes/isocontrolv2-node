@@ -1,11 +1,13 @@
+const { fillType } = require("../../helpers/pipes");
 const { send } = require("../../helpers/send");
-const { fillType } = require("./feed.microservices");
 const {
   getFeedPipesService,
   updateFeedPipesService,
   getProgressService,
   deletePipe,
   addPipesService,
+  getFeedForecastService,
+  addForecastService,
 } = require("./feed.services");
 
 exports.getProgress = async (req, res) => {
@@ -29,12 +31,35 @@ exports.getFeedPipes = async (req, res) => {
   }
 };
 
+exports.getFeedForecast = async (req, res) => {
+  //Get del forecast del feed
+  try {
+    const feedForecast = await getFeedForecastService();
+    return send(res, true, feedForecast);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
 exports.submitFeedPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await updateFeedPipesService(data);
     send(res, true);
     // this.getFeedPipes(req, res);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.submitForecast = async (req, res) => {
+  const { day, estimated, forecast } = req.body;
+  console.log("Hola ", estimated, forecast);
+  try {
+    await addForecastService(day, estimated, forecast);
+    send(res, true);
   } catch (err) {
     console.error(err);
     return send(res, false, err);

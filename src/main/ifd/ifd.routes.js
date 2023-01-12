@@ -4,4 +4,8 @@ const router = require("express").Router(),
 
 router.get("/get_progress", checkAuth, controller.getProgress);
 
+router.get("/get_ifd_pipes", checkAuth, controller.getIFDPipes);
+
+router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
+
 module.exports = router;
