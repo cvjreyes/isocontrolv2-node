@@ -27,3 +27,7 @@ Explicar:
 ### FOR PRODUCTION:
 
 - pm2
+
+### DATABASE
+
+- feed_forecast needs one column added: forecast
