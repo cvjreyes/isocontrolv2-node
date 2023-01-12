@@ -26,6 +26,13 @@ exports.getFeedPipesService = async () => {
   return pipes;
 };
 
+exports.getFeedForecastService = async () => {
+  const [pipes] = await pool.query(
+    "SELECT * FROM feed_forecast ORDER BY id DESC"
+  );
+  return pipes;
+};
+
 exports.updateFeedPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
@@ -61,4 +68,16 @@ exports.addPipesService = async (data) => {
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
   });
+};
+
+exports.addForecastService = async (day, estimated, forecast) => {
+  const { ok } = await withTransaction(
+    async () =>
+      await pool.query(
+        "INSERT INTO feed_forecast(day, estimated, forecast) VALUES(?,?,?)",
+        [day, estimated, forecast]
+      )
+  );
+  if (ok) return true;
+  throw new Error("Something went wrong updating feed pipes");
 };
