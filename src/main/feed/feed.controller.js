@@ -1,5 +1,5 @@
+const { fillType } = require("../../helpers/pipes");
 const { send } = require("../../helpers/send");
-const { fillType } = require("./feed.microservices");
 const {
   getFeedPipesService,
   updateFeedPipesService,
