@@ -1,6 +1,13 @@
-TO DO ❌:
-- replace all users created_at and updated_at null || undefined || 0:00:00 => Date.now() TO AVOID ERRORS
-- no actual need for token to be saved into db, jwt handles it for you
-
 DONE ✔:
 - create readme
+
+TO DO ❌:
+- REVISAR IFD WEIGHT ! 
+- replace all users created_at and updated_at null || undefined || 0:00:00 => Date.now() TO AVOID ERRORS
+- no actual need for token to be saved into db, jwt handles it for you
+- REVISAR WITHTRANSACTION DEL ADD FEED PIPES
+
+- ¡ REVISAR ESTO QUÉ ES QUÉ HACE !
+  const [res3] = await pool.query(
+      "SELECT stage1 as weight, valves, instruments FROM pipectrls LEFT JOIN pestpipes ON status_id = pestpipes.id"
+    );

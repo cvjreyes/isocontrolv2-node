@@ -4,9 +4,13 @@
 2. `npm start` => this will run `nodemon` which will stop on errors and log them
 3. Do not use `npm run start-dev` since it will start pm2 on production mode => errors will not be logged in the console and server will not be stopped. Error logs need to be handled by emailing them or manually checking logs file everyday or email this file SOMETHING
 
+### With Transaction:
+
+- Safe way to update DB
+- DO NOT USE WITH LOOPS => it WILL crash !!!
+
 Explicar:
 
-- withTrasition
 - checkAuth middleware
 - send helper fn
 - wrap all in try catch
@@ -31,4 +35,6 @@ Explicar:
 ### DATABASE
 
 - feed_forecast needs one column added: forecast
--
+- status column added to estimated_pieps
+- estimated_pipes now called ifd_pipes
+- dpipes not being used?
