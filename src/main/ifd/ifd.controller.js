@@ -1,6 +1,10 @@
 const pool = require("../../../config/db");
 const { send } = require("../../helpers/send");
-const { deletePipe, getPipesService } = require("./ifd.services.js");
+const {
+  deletePipe,
+  getPipesService,
+  updateIFDPipesService,
+} = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
   try {
@@ -37,7 +41,7 @@ exports.getProgress = async (req, res) => {
       }
     }
     const [res3] = await pool.query(
-      "SELECT diameter, calc_notes FROM ifd_pipes_view LEFT JOIN `lines` ON ifd_pipes_view.line_reference = `lines`.tag WHERE status COLLATE utf8mb4_unicode_ci = ?",
+      "SELECT diameter, calc_notes FROM ifd_pipes_view LEFT JOIN `lines` ON ifd_pipes_view.line_reference = `lines`.line_reference WHERE status COLLATE utf8mb4_unicode_ci = ?",
       ["ESTIMATED"]
     );
     if (!res3[0]) return;
@@ -64,6 +68,19 @@ exports.getIFDPipes = async (req, res) => {
   try {
     const pipes = await getPipesService();
     send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.submitIFDPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await updateIFDPipesService(data);
+    // if status is modelled => añadir a ifd_pipes
+    send(res, true);
+    // this.getFeedPipes(req, res);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
