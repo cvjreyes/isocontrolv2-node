@@ -1,3 +1,5 @@
+const pool = require("../../config/db");
+
 exports.fillType = (data) => {
   for (let i = 0; i < data.length; i++) {
     if (data[i].calc_notes === "NA" || data[i].calc_notes === "unset") {
@@ -11,4 +13,28 @@ exports.fillType = (data) => {
     } else data[i].type = "TL3";
   }
   return data;
+};
+
+exports.getAreaId = async (area) => {
+  const [area_id] = await pool.query(
+    "SELECT id FROM areas WHERE name = ?",
+    area.trim()
+  );
+  if (!area_id[0].id) throw new Error("Area ID is incorrect");
+  return area_id[0].id;
+};
+
+exports.getLineRefno = async (line_ref) => {
+  const [refno] = await pool.query(
+    "SELECT refno FROM `lines` WHERE line_reference = ?",
+    line_ref.trim()
+  );
+  if (!refno[0].refno) throw new Error("Line reference is incorrect");
+  return refno[0].refno;
+};
+
+exports.getOwnerId = async (name) => {
+  const [owner] = await pool.query("SELECT id FROM users WHERE name = ?", name);
+  if (!owner[0].id) throw new Error("Line reference is incorrect");
+  return owner[0].id;
 };

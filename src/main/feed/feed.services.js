@@ -1,10 +1,7 @@
 const pool = require("../../../config/db");
+const { getAreaId, getLineRefno } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
-const {
-  getAreaId,
-  getLineRefno,
-  addPipeToIFD,
-} = require("./feed.microservices");
+const { addPipeToIFD } = require("./feed.microservices");
 
 exports.getProgressService = async (tableName) => {
   const [pipes] = await pool.query(`SELECT status FROM ${tableName}`);
@@ -49,8 +46,7 @@ exports.updateFeedPipesService = async (data) => {
         )
     );
     if (pipe.status.includes("MODELLED")) {
-      const res = await addPipeToIFD(pipe, area_id, line_refno);
-      console.log(res);
+      await addPipeToIFD(pipe, area_id, line_refno);
     }
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
