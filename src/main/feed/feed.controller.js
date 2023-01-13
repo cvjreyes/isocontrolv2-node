@@ -46,6 +46,7 @@ exports.submitFeedPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await updateFeedPipesService(data);
+    // if status is modelled => añadir a ifd_pipes
     send(res, true);
     // this.getFeedPipes(req, res);
   } catch (err) {
@@ -56,7 +57,6 @@ exports.submitFeedPipes = async (req, res) => {
 
 exports.submitForecast = async (req, res) => {
   const { day, estimated, forecast } = req.body;
-  console.log("Hola ", estimated, forecast);
   try {
     await addForecastService(day, estimated, forecast);
     send(res, true);
@@ -81,7 +81,9 @@ exports.deletePipe = async (req, res) => {
 exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
-    addPipesService(data);
+    data.forEach(async (pipe, i) => {
+      await addPipesService(pipe, i);
+    });
     send(res, true);
   } catch (er) {
     console.error(err);
