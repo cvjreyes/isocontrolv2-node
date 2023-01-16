@@ -7,6 +7,13 @@ const {
 } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
+  // 1 calcular tipo de línea
+  // 2 calcular el total del peso de la sumatoria de líneas
+  //   tl1 = 6
+  //   tl2 = 10
+  //   tl3 = 20
+  // 3 calcular según datos de pestpies  p.e. TL1 Modelled = weight 3 / 6 ( 50% )
+
   try {
     // const users = await findAllUsersService();
     let estimated_weight = 0,
@@ -20,8 +27,8 @@ exports.getProgress = async (req, res) => {
       if (res1[i].calc_notes !== "NA" && res1[i].calc_notes !== "unset") {
         estimated_weight += 10;
       } else if (
-        (process.env.NODE_MMDN == 1 && res1[i].diameter < 2.0) ||
-        (process.env.NODE_MMDN == 0 && res1[i].diameter < 50)
+        (process.env.NODE_NPSDN == 1 && res1[i].diameter < 2.0) ||
+        (process.env.NODE_NPSDN == 0 && res1[i].diameter < 50)
       ) {
         estimated_weight += 3;
       } else {

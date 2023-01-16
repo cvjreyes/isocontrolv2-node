@@ -17,7 +17,7 @@ exports.updateIFDPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
     const line_refno = await getLineRefno(pipe.line_reference);
-    const owner_id = await getOwnerId(pipe.owner);
+    const owner_id = pipe.owner ? await getOwnerId(pipe.owner) : null;
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
@@ -34,9 +34,6 @@ exports.updateIFDPipesService = async (data) => {
           ]
         )
     );
-    // if (pipe.status.includes("MODELLED")) {
-    //   const res = await addPipeToIFD(pipe, area_id, line_refno);
-    // }
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
   });
