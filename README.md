@@ -4,6 +4,10 @@
 2. `npm start` => this will run `nodemon` which will stop on errors and log them
 3. Do not use `npm run start-dev` since it will start pm2 on production mode => errors will not be logged in the console and server will not be stopped. Error logs need to be handled by emailing them or manually checking logs file everyday or email this file SOMETHING
 
+### ENV
+
+- NODE_NPSDN means inches or mms
+
 ### With Transaction:
 
 - Safe way to update DB

@@ -1,7 +1,7 @@
 const pool = require("../../../config/db");
-const { getAreaId, getLineRefno } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
-const { addPipeToIFD } = require("./feed.microservices");
+const { getAreaId, getLineRefno } = require("../../helpers/pipes");
+const { addPipeToIFD, removePipeFromIFD } = require("./feed.microservices");
 
 exports.getProgressService = async (tableName) => {
   const [pipes] = await pool.query(`SELECT status FROM ${tableName}`);
@@ -34,10 +34,16 @@ exports.getFeedForecastService = async () => {
   return pipes;
 };
 
+exports.getFEEDPipeService = async (id) => {
+  const [pipe] = await pool.query("SELECT * FROM feed_pipes WHERE id = ?", id);
+  return pipe[0];
+};
+
 exports.updateFeedPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
     const line_refno = await getLineRefno(pipe.line_reference);
+    const { status: previousStatus } = await this.getFEEDPipeService(pipe.id);
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
@@ -45,8 +51,16 @@ exports.updateFeedPipesService = async (data) => {
           [line_refno, area_id, pipe.diameter, pipe.train, pipe.status, pipe.id]
         )
     );
-    if (pipe.status.includes("MODELLED")) {
+    if (
+      pipe.status.includes("MODELLED") &&
+      !previousStatus.includes("MODELLED")
+    ) {
       await addPipeToIFD(pipe, area_id, line_refno);
+    } else if (
+      previousStatus.includes("MODELLED") &&
+      !pipe.status.includes("MODELLED")
+    ) {
+      await removePipeFromIFD(pipe.id);
     }
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
