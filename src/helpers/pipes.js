@@ -1,4 +1,5 @@
 const pool = require("../../config/db");
+const { progressNumbers } = require("./progressNumbers");
 
 exports.fillType = (data) => {
   for (let i = 0; i < data.length; i++) {
@@ -13,6 +14,13 @@ exports.fillType = (data) => {
     } else data[i].type = "TL3";
   }
   return data;
+};
+
+exports.fillProgress = (data) => {
+  return data.map((item) => ({
+    ...item,
+    progress: progressNumbers[item.type][item.tray],
+  }));
 };
 
 exports.getAreaId = async (area) => {
