@@ -4,6 +4,7 @@ const {
   deletePipe,
   getPipesService,
   updateIFDPipesService,
+  addPipesService,
 } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
@@ -89,6 +90,19 @@ exports.submitIFDPipes = async (req, res) => {
     send(res, true);
     // this.getFeedPipes(req, res);
   } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.addPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await data.forEach(async (pipe, i) => {
+      await addPipesService(pipe, i);
+    });
+    send(res, true);
+  } catch (er) {
     console.error(err);
     return send(res, false, err);
   }

@@ -4,8 +4,10 @@ const {
   getAreaId,
   getLineRefno,
   getOwnerId,
+  findOwnerId,
 } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
+const { addPipesService } = require("../feed/feed.services");
 
 exports.getPipesService = async () => {
   const [resRows] = await pool.query("SELECT * FROM ifd_pipes_view");
@@ -42,4 +44,26 @@ exports.updateIFDPipesService = async (data) => {
 exports.deletePipe = async (id) => {
   const [pipes] = await pool.query("DELETE FROM ifd_pipes WHERE id = ?", id);
   return pipes;
+};
+
+exports.addPipesService = async (pipe) => {
+  const area_id = await getAreaId(pipe.area);
+  const line_refno = await getLineRefno(pipe.line_reference);
+  // añadir pipe en feed_pipes y coger feed_id
+  const { insertId } = await addPipesService(pipe);
+  const owner_id = await findOwnerId(pipe.owner);
+  const res = await pool.query(
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [
+      line_refno,
+      insertId,
+      area_id,
+      pipe.diameter,
+      pipe.train,
+      pipe.status,
+      owner_id,
+    ]
+  );
+  console.log("res: ", res);
+  return res;
 };

@@ -8,6 +8,8 @@ router.get("/get_ifd_pipes", checkAuth, controller.getIFDPipes);
 
 router.post("/submit_ifd_pipes", checkAuth, controller.submitIFDPipes);
 
+router.post("/add_pipes", checkAuth, controller.addPipes);
+
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
 module.exports = router;
