@@ -1,4 +1,5 @@
 const pool = require("../../config/db");
+const { progressNumbers } = require("./progressNumbers");
 
 exports.fillType = (data) => {
   for (let i = 0; i < data.length; i++) {
@@ -18,7 +19,7 @@ exports.fillType = (data) => {
 exports.fillProgress = (data) => {
   return data.map((item) => ({
     ...item,
-    progress: this.progressNumbers[item.type][item.tray],
+    progress: progressNumbers[item.type][item.tray],
   }));
 };
 
@@ -46,28 +47,7 @@ exports.getOwnerId = async (name) => {
   return owner[0].id;
 };
 
-<<<<<<< HEAD
 exports.findOwnerId = async (owner) => {
   const [res] = await pool.query("SELECT * FROM users WHERE name = ?", owner);
   return res[0].id;
-=======
-exports.progressNumbers = {
-  TL1: {
-    modelled: 50,
-    sdesign: 100,
-  },
-  TL2: {
-    modelled: 50,
-    supports: 90,
-    sdesign: 100,
-  },
-  TL3: {
-    modelled: 50,
-    sstress: 75,
-    rstress: 80,
-    stress: 85,
-    supports: 90,
-    sdesign: 100,
-  },
->>>>>>> sean
 };

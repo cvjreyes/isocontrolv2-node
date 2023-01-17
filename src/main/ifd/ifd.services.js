@@ -4,11 +4,8 @@ const {
   getAreaId,
   getLineRefno,
   getOwnerId,
-<<<<<<< HEAD
   findOwnerId,
-=======
   fillProgress,
->>>>>>> sean
 } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
 const { addPipesService } = require("../feed/feed.services");

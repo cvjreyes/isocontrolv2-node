@@ -4,11 +4,8 @@ const {
   deletePipe,
   getPipesService,
   updateIFDPipesService,
-<<<<<<< HEAD
   addPipesService,
-=======
   getModelledPipesService,
->>>>>>> sean
 } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
