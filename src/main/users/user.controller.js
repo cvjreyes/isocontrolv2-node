@@ -74,3 +74,13 @@ exports.getOwners = async (req, res) => {
     send(res, false, err);
   }
 };
+
+exports.changePassword = async (req, res) => {
+  try {
+    // const owners = await getOwnersService();
+    send(res, true, owners);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};

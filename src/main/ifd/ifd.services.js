@@ -4,7 +4,6 @@ const {
   getAreaId,
   getLineRefno,
   getOwnerId,
-  findOwnerId,
   fillProgress,
 } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
@@ -59,7 +58,7 @@ exports.addPipesService = async (pipe) => {
   const line_refno = await getLineRefno(pipe.line_reference);
   // añadir pipe en feed_pipes y coger feed_id
   const { insertId } = await addPipesService(pipe);
-  const owner_id = await findOwnerId(pipe.owner);
+  const owner_id = await getOwnerId(pipe.owner);
   const res = await pool.query(
     "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [
