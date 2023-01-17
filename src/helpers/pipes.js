@@ -15,6 +15,13 @@ exports.fillType = (data) => {
   return data;
 };
 
+exports.fillProgress = (data) => {
+  return data.map((item) => ({
+    ...item,
+    progress: this.progressNumbers[item.type][item.tray],
+  }));
+};
+
 exports.getAreaId = async (area) => {
   const [area_id] = await pool.query(
     "SELECT id FROM areas WHERE name = ?",
@@ -37,4 +44,24 @@ exports.getOwnerId = async (name) => {
   const [owner] = await pool.query("SELECT id FROM users WHERE name = ?", name);
   if (!owner[0].id) throw new Error("Line reference is incorrect");
   return owner[0].id;
+};
+
+exports.progressNumbers = {
+  TL1: {
+    modelled: 50,
+    sdesign: 100,
+  },
+  TL2: {
+    modelled: 50,
+    supports: 90,
+    sdesign: 100,
+  },
+  TL3: {
+    modelled: 50,
+    sstress: 75,
+    rstress: 80,
+    stress: 85,
+    supports: 90,
+    sdesign: 100,
+  },
 };
