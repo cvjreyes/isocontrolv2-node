@@ -52,13 +52,13 @@ exports.updateFeedPipesService = async (data) => {
         )
     );
     if (
-      pipe.status.includes("MODELLED") &&
-      !previousStatus.includes("MODELLED")
+      pipe.status.toLowerCase().includes("modelled") &&
+      !previousStatus.toLowerCase().includes("modelled")
     ) {
       await addPipeToIFD(pipe, area_id, line_refno);
     } else if (
-      previousStatus.includes("MODELLED") &&
-      !pipe.status.includes("MODELLED")
+      previousStatus.toLowerCase().includes("modelled") &&
+      !pipe.status.toLowerCase().includes("modelled")
     ) {
       await removePipeFromIFD(pipe.id);
     }
@@ -72,13 +72,15 @@ exports.deletePipe = async (id) => {
   return pipes;
 };
 
-exports.addPipesService = async (pipe, i) => {
+exports.addPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   const line_refno = await getLineRefno(pipe.line_reference);
-  await pool.query(
+  console.log(pipe, area_id, line_refno);
+  const [res] = await pool.query(
     "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
     [line_refno, area_id, pipe.diameter, pipe.train, pipe.status]
   );
+  return res;
 };
 
 exports.addForecastService = async (day, estimated, forecast) => {
