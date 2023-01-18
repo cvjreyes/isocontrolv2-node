@@ -11,3 +11,15 @@ TO DO ❌:
   const [res3] = await pool.query(
       "SELECT stage1 as weight, valves, instruments FROM pipectrls LEFT JOIN pestpipes ON status_id = pestpipes.id"
     );
+
+BBDD USADAS
+- areas
+- diameters
+- lines
+- users
+- feed_pipes
+- ifd_pipes
+
+VIEW USADAS
+-  feed_pipes_view
+-  ifd_pipes_view
