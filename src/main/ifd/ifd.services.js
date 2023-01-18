@@ -16,11 +16,13 @@ exports.getPipesService = async () => {
 };
 
 exports.getMyPipesService = async (id) => {
-  const [pipes] = await pool.query(
+  const [resRows] = await pool.query(
     "SELECT * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ?",
     [id, "ESTIMATED"]
   );
-  return pipes;
+  const rows = fillType(resRows);
+  const rowsEnd = fillProgress(rows);
+  return rowsEnd;
 };
 
 exports.getPipesFromTrayService = async (status) => {

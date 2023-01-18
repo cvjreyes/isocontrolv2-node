@@ -86,8 +86,9 @@ exports.getIFDPipes = async (req, res) => {
 };
 
 exports.getMyPipes = async (req, res) => {
+  const { user_id } = req;
   try {
-    const pipes = await getMyPipesService();
+    const pipes = await getMyPipesService(user_id);
     send(res, true, pipes);
   } catch (err) {
     console.error(err);
@@ -124,6 +125,17 @@ exports.claimIFDPipes = async (req, res) => {
   const user_id = req.user_id;
   try {
     await claimIFDPipesService(data, user_id);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.unclaimIFDPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await claimIFDPipesService(data, null);
     send(res, true);
   } catch (err) {
     console.error(err);

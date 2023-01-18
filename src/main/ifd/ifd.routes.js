@@ -16,6 +16,8 @@ router.get(
 
 router.post("/claim_ifd_pipes", checkAuth, controller.claimIFDPipes);
 
+router.post("/unclaim_ifd_pipes", checkAuth, controller.unclaimIFDPipes);
+
 router.post("/submit_ifd_pipes", checkAuth, controller.submitIFDPipes);
 
 router.post("/add_pipes", checkAuth, controller.addPipes);
