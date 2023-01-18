@@ -46,8 +46,3 @@ exports.getOwnerId = async (name) => {
   if (!owner[0].id) throw new Error("Line reference is incorrect");
   return owner[0].id;
 };
-
-exports.findOwnerId = async (owner) => {
-  const [res] = await pool.query("SELECT * FROM users WHERE name = ?", owner);
-  return res[0].id;
-};
