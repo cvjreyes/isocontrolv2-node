@@ -4,7 +4,6 @@ const {
   getAreaId,
   getLineRefno,
   getOwnerId,
-  fillProgress,
 } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
 const { addPipesService } = require("../feed/feed.services");
@@ -15,8 +14,10 @@ exports.getPipesService = async () => {
   return rows;
 };
 
-exports.getModelledPipesService = async () => {
-  const [resRows] = await pool.query("SELECT * FROM trays_view");
+exports.getPipesFromTrayService = async (status) => {
+  const [resRows] = await pool.query(
+    `SELECT * FROM ifd_pipes_view WHERE status LIKE '${status}%'`
+  );
   const rows = fillType(resRows);
   const rowsEnd = fillProgress(rows);
   return rowsEnd;
@@ -73,4 +74,18 @@ exports.addPipesService = async (pipe) => {
   );
   console.log("res: ", res);
   return res;
+};
+
+exports.claimIFDPipesService = async (data, user_id) => {
+  return await data.forEach(async (pipe) => {
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query("UPDATE ifd_pipes SET owner_id = ? WHERE id = ?", [
+          user_id,
+          pipe.id,
+        ])
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong claiming feed pipes");
+  });
 };
