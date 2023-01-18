@@ -4,6 +4,7 @@ const {
   getAreaId,
   getLineRefno,
   getOwnerId,
+  fillProgress,
 } = require("../../helpers/pipes");
 const { withTransaction } = require("../../helpers/withTransaction");
 const { addPipesService } = require("../feed/feed.services");
@@ -12,6 +13,14 @@ exports.getPipesService = async () => {
   const [resRows] = await pool.query("SELECT * FROM ifd_pipes_view");
   const rows = fillType(resRows);
   return rows;
+};
+
+exports.getMyPipesService = async (id) => {
+  const [pipes] = await pool.query(
+    "SELECT * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ?",
+    [id, "ESTIMATED"]
+  );
+  return pipes;
 };
 
 exports.getPipesFromTrayService = async (status) => {
