@@ -6,7 +6,13 @@ router.get("/get_progress", checkAuth, controller.getProgress);
 
 router.get("/get_ifd_pipes", checkAuth, controller.getIFDPipes);
 
-router.get("/get_ifd_pipes_from_tray/:status", checkAuth, controller.getIFDPipesFromTray);
+router.get("/get_my_pipes", checkAuth, controller.getMyPipes);
+
+router.get(
+  "/get_ifd_pipes_from_tray/:status",
+  checkAuth,
+  controller.getIFDPipesFromTray
+);
 
 router.post("/claim_ifd_pipes", checkAuth, controller.claimIFDPipes);
 
