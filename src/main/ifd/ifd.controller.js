@@ -5,7 +5,8 @@ const {
   getPipesService,
   updateIFDPipesService,
   addPipesService,
-  getModelledPipesService,
+  getPipesFromTrayService,
+  claimIFDPipesService,
 } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
@@ -83,9 +84,10 @@ exports.getIFDPipes = async (req, res) => {
   }
 };
 
-exports.getModelledIFDPipes = async (req, res) => {
+exports.getIFDPipesFromTray = async (req, res) => {
+  const { status } = req.params;
   try {
-    const pipes = await getModelledPipesService();
+    const pipes = await getPipesFromTrayService(status);
     send(res, true, pipes);
   } catch (err) {
     console.error(err);
@@ -100,6 +102,18 @@ exports.submitIFDPipes = async (req, res) => {
     // if status is modelled => añadir a ifd_pipes
     send(res, true);
     // this.getFeedPipes(req, res);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.claimIFDPipes = async (req, res) => {
+  const { data } = req.body;
+  const user_id = req.user_id;
+  try {
+    await claimIFDPipesService(data, user_id);
+    send(res, true);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
