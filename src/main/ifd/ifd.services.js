@@ -6,13 +6,21 @@ const {
   getOwnerId,
   fillProgress,
 } = require("../../helpers/pipes");
+const {
+  calculateNextStep,
+  formatStatus,
+} = require("../../helpers/progressNumbers");
 const { withTransaction } = require("../../helpers/withTransaction");
 const { addPipesService } = require("../feed/feed.services");
 
 exports.getPipesService = async () => {
   const [resRows] = await pool.query("SELECT * FROM ifd_pipes_view");
   const rows = fillType(resRows);
-  return rows;
+  const rowsEnd = rows.map((row) => ({
+    ...row,
+    status: formatStatus(row.status),
+  }));
+  return rowsEnd;
 };
 
 exports.getMyPipesService = async (id) => {
@@ -21,7 +29,12 @@ exports.getMyPipesService = async (id) => {
     [id, "ESTIMATED"]
   );
   const rows = fillType(resRows);
-  const rowsEnd = fillProgress(rows);
+  const rows2 = fillProgress(rows);
+  const rowsEnd = rows2.map((row) => ({
+    ...row,
+    next_step: calculateNextStep(row.type, row.status),
+    status: formatStatus(row.status),
+  }));
   return rowsEnd;
 };
 
@@ -85,6 +98,23 @@ exports.addPipesService = async (pipe) => {
   );
   console.log("res: ", res);
   return res;
+};
+
+exports.nextStepService = async (data) => {
+  return await data.forEach(async (pipe) => {
+    const nextStep = calculateNextStep(pipe.type, pipe.status)
+      .replace("-", "")
+      .toUpperCase();
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query(
+          "UPDATE ifd_pipes SET status = ?, owner_id = NULL WHERE id = ?",
+          [nextStep, pipe.id]
+        )
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong claiming feed pipes");
+  });
 };
 
 exports.claimIFDPipesService = async (data, user_id) => {
