@@ -6,7 +6,7 @@ router.get("/get_progress", checkAuth, controller.getProgress);
 
 router.get("/get_feed_pipes", checkAuth, controller.getFeedPipes);
 
-router.get("/get_forecast", checkAuth, controller.getFeedForecast)
+router.get("/get_forecast", checkAuth, controller.getFeedForecast);
 
 router.post("/submit_feed_pipes", checkAuth, controller.submitFeedPipes);
 

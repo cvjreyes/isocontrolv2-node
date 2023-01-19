@@ -26,6 +26,8 @@ router.post("/next_step", checkAuth, controller.nextStep);
 
 router.post("/return", checkAuth, controller.previousStep);
 
+router.post("/change_actions", checkAuth, controller.changeActions);
+
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
 module.exports = router;

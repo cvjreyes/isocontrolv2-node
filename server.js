@@ -45,5 +45,5 @@ app.use("*", (req, res) => {
 
 // set port, listen for requests
 app.listen(process.env.NODE_DB_PORT, () => {
-  console.log(`Server is running on port: ${process.env.NODE_DB_PORT}`);
+  console.info(`Server is running on port: ${process.env.NODE_DB_PORT}`);
 });

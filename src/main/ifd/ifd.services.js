@@ -98,7 +98,6 @@ exports.addPipesService = async (pipe) => {
       owner_id,
     ]
   );
-  console.log("res: ", res);
   return res;
 };
 
@@ -121,18 +120,32 @@ exports.nextStepService = async (data) => {
 
 exports.previousStepService = async (data) => {
   return await data.forEach(async (pipe) => {
-    const nextStep = calculatePreviousStep(pipe.type, pipe.status)
+    const preciousStep = calculatePreviousStep(pipe.type, pipe.status)
       .replace("-", "")
       .toUpperCase();
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
           "UPDATE ifd_pipes SET status = ?, owner_id = NULL WHERE id = ?",
-          [nextStep, pipe.id]
+          [preciousStep, pipe.id]
         )
     );
     if (ok) return true;
     throw new Error("Something went wrong claiming feed pipes");
+  });
+};
+
+exports.changeActionsService = async (data) => {
+  return await data.forEach(async (pipe) => {
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query(
+          "UPDATE ifd_pipes SET valve = ?, instrument = ?, NA = ? WHERE id = ?",
+          [pipe.valve, pipe.instrument, pipe.NA, pipe.id]
+        )
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong updating feed pipes");
   });
 };
 
