@@ -27,6 +27,14 @@ exports.calculateNextStep = (type, status) => {
   return this.formatStatus(nextStep);
 };
 
+exports.calculatePreviousStep = (type, status) => {
+  const list = Object.keys(this.progressNumbers[type]);
+  const tempStatus = status.replace("-", "").replace("*", "").toLowerCase();
+  const idx = list.findIndex((item) => tempStatus == item);
+  const nextStep = list[idx] === "sdesign" ? "IsoTracker" : list[idx - 1];
+  return this.formatStatus(nextStep);
+};
+
 exports.formatStatus = (status) => {
   const list = {
     sstress: "S-Stress",
