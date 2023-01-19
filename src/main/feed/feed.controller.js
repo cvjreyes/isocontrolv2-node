@@ -8,7 +8,6 @@ const {
   addPipesService,
   getFeedForecastService,
   addForecastService,
-  checkRowIFDModelled,
 } = require("./feed.services");
 
 exports.getProgress = async (req, res) => {
@@ -24,14 +23,6 @@ exports.getProgress = async (req, res) => {
 exports.getFeedPipes = async (req, res) => {
   try {
     const resRows = await getFeedPipesService();
-    
-    const rowIFDModelled = await resRows.map(async (x) => {
-      return {
-        ...x,
-        ifd_modelled: await checkRowIFDModelled(x),
-      };
-    });
-    console.log( await rowIFDModelled);
     const rows = fillType(resRows);
     return send(res, true, rows);
   } catch (err) {

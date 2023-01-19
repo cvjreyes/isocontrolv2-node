@@ -98,7 +98,6 @@ exports.addPipesService = async (pipe) => {
       owner_id,
     ]
   );
-  console.log("res: ", res);
   return res;
 };
 

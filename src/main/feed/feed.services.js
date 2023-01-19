@@ -27,14 +27,6 @@ exports.getFeedPipesService = async () => {
   return pipes;
 };
 
-exports.checkRowIFDModelled = async (pipe) => {
-  const [check] = await pool.query(
-    "SELECT status from ifd_pipes WHERE feed_id = ?",
-    [pipe.id]
-  );
-  return check[0]?.status !== "ESTIMATED";
-};
-
 exports.getFeedForecastService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM feed_forecast ORDER BY id DESC"
@@ -83,7 +75,6 @@ exports.deletePipe = async (id) => {
 exports.addPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   const line_refno = await getLineRefno(pipe.line_reference);
-  console.log(pipe, area_id, line_refno);
   const [res] = await pool.query(
     "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
     [line_refno, area_id, pipe.diameter, pipe.train, pipe.status]
