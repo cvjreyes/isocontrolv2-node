@@ -9,6 +9,7 @@ const {
   claimIFDPipesService,
   getMyPipesService,
   nextStepService,
+  previousStepService,
 } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
@@ -161,6 +162,17 @@ exports.nextStep = async (req, res) => {
   const { data } = req.body;
   try {
     await nextStepService(data);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.previousStep = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await previousStepService(data);
     send(res, true);
   } catch (err) {
     console.error(err);

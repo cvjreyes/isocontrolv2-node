@@ -3,7 +3,11 @@ const { progressNumbers } = require("./progressNumbers");
 
 exports.fillType = (data) => {
   for (let i = 0; i < data.length; i++) {
-    if (data[i].calc_notes === "NA" || data[i].calc_notes === "unset") {
+    if (
+      data[i].calc_notes === "NA" ||
+      data[i].calc_notes === "unset" ||
+      !data[i].calc_notes
+    ) {
       if (process.env.NODE_NPSDN == "0") {
         if (data[i].diameter < 2.0) data[i].type = "TL1";
         else data[i].type = "TL2";
