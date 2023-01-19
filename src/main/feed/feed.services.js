@@ -27,6 +27,14 @@ exports.getFeedPipesService = async () => {
   return pipes;
 };
 
+exports.checkRowIFDModelled = async (pipe) => {
+  const [check] = await pool.query(
+    "SELECT status from ifd_pipes WHERE feed_id = ?",
+    [pipe.id]
+  );
+  return check[0]?.status !== "ESTIMATED";
+};
+
 exports.getFeedForecastService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM feed_forecast ORDER BY id DESC"
