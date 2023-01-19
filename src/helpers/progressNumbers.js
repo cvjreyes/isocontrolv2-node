@@ -31,8 +31,8 @@ exports.calculatePreviousStep = (type, status) => {
   const list = Object.keys(this.progressNumbers[type]);
   const tempStatus = status.replace("-", "").replace("*", "").toLowerCase();
   const idx = list.findIndex((item) => tempStatus == item);
-  const nextStep = list[idx] === "sdesign" ? "IsoTracker" : list[idx - 1];
-  return this.formatStatus(nextStep);
+  const previousStep = list[idx] === "modelled" ? "modelled" : list[idx - 1];
+  return this.formatStatus(previousStep);
 };
 
 exports.formatStatus = (status) => {
