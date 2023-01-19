@@ -19,7 +19,10 @@ exports.fillType = (data) => {
 exports.fillProgress = (data) => {
   return data.map((item) => ({
     ...item,
-    progress: progressNumbers[item.type][item.tray],
+    progress:
+      progressNumbers[item.type][
+        item.status.toLowerCase().replace("-", "").replace("*", "")
+      ],
   }));
 };
 

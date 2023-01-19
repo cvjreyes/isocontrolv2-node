@@ -107,10 +107,10 @@ exports.nextStepService = async (data) => {
       .toUpperCase();
     const { ok } = await withTransaction(
       async () =>
-        await pool.query("UPDATE ifd_pipes SET status = ? WHERE id = ?", [
-          nextStep,
-          pipe.id,
-        ])
+        await pool.query(
+          "UPDATE ifd_pipes SET status = ?, owner_id = NULL WHERE id = ?",
+          [nextStep, pipe.id]
+        )
     );
     if (ok) return true;
     throw new Error("Something went wrong claiming feed pipes");
