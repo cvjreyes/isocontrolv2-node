@@ -16,7 +16,6 @@ exports.progressNumbers = {
     supports: 90,
     sdesign: 100,
     isotracker: 100,
-    sdesign: 100,
   },
 };
 
@@ -25,7 +24,7 @@ exports.calculateNextStep = (type, status) => {
   const tempStatus = status.replace("-", "").replace("*", "").toLowerCase();
   const idx = list.findIndex((item) => tempStatus == item);
   const nextStep = list[idx] === "sdesign" ? "IsoTracker" : list[idx + 1];
-  return nextStep ? this.formatStatus(nextStep) : "IsoTracker";
+  return this.formatStatus(nextStep);
 };
 
 exports.formatStatus = (status) => {
