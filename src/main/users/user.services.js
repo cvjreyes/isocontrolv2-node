@@ -1,3 +1,4 @@
+const md5 = require("md5");
 const pool = require("../../../config/db");
 
 exports.findAllUsersService = async () => {
@@ -35,4 +36,12 @@ exports.getOwnersService = async () => {
     "SELECT `users`.`name` as name FROM `users` LEFT JOIN model_has_roles ON `users`.id = model_has_roles.model_id  LEFT JOIN roles ON `model_has_roles`.role_id = roles.id WHERE role_id = 1"
   );
   return owners;
+};
+
+exports.changePasswordService = async (pw, user_id) => {
+  const [updated] = await pool.query(
+    "UPDATE users SET password = ? WHERE id = ?",
+    [md5(pw), user_id]
+  );
+  return updated;
 };

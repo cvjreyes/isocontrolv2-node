@@ -5,6 +5,7 @@ const {
   getRoleIdsService,
   getUserRolesService,
   getOwnersService,
+  changePasswordService,
 } = require("./user.services");
 const validator = require("validator");
 const { validatePassword } = require("./user.validations");
@@ -76,9 +77,22 @@ exports.getOwners = async (req, res) => {
 };
 
 exports.changePassword = async (req, res) => {
+  const { user_id } = req;
+  const { old_password, new_password, confirm_new_password } = req.body;
   try {
-    // const owners = await getOwnersService();
-    send(res, true, owners);
+    if (!old_password || !new_password || !confirm_new_password)
+      return send(res, false, "All fields must be filled");
+    if (new_password.length < 6 || confirm_new_password.length < 6)
+      return send(res, false, "New password must be 6 characters long min");
+    if (new_password !== confirm_new_password)
+      return send(res, false, "Passwords should match");
+    if (old_password === new_password)
+      return send(res, false, "New password can't be equal to current one");
+    const { password } = await getUserService(user_id);
+    const validatedPassword = validatePassword(old_password, password);
+    if (!validatedPassword) return send(res, false, "Invalid credentials");
+    const updated = await changePasswordService(new_password, user_id);
+    return send(res, true, "Password updated successfully!");
   } catch (err) {
     console.error(err);
     send(res, false, err);
