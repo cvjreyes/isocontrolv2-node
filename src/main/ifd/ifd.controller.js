@@ -11,6 +11,7 @@ const {
   nextStepService,
   previousStepService,
   changeActionsService,
+  restoreIFDPipesService,
 } = require("./ifd.services.js");
 
 exports.getProgress = async (req, res) => {
@@ -79,8 +80,9 @@ exports.getProgress = async (req, res) => {
 };
 
 exports.getIFDPipes = async (req, res) => {
+  const { trashed } = req.params;
   try {
-    const pipes = await getPipesService();
+    const pipes = await getPipesService(trashed);
     send(res, true, pipes);
   } catch (err) {
     console.error(err);
@@ -196,10 +198,20 @@ exports.deletePipe = async (req, res) => {
   const { id } = req.params;
   try {
     const del = await deletePipe(id);
-    // await updateFeedPipesService(rows);
     send(res, true, del);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
   }
 };
+
+exports.restoreIFDPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await restoreIFDPipesService(data);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+}

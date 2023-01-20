@@ -4,7 +4,7 @@ const router = require("express").Router(),
 
 router.get("/get_progress", checkAuth, controller.getProgress);
 
-router.get("/get_ifd_pipes", checkAuth, controller.getIFDPipes);
+router.get("/get_ifd_pipes/:trashed", checkAuth, controller.getIFDPipes);
 
 router.get("/get_my_pipes", checkAuth, controller.getMyPipes);
 
@@ -27,6 +27,8 @@ router.post("/next_step", checkAuth, controller.nextStep);
 router.post("/return", checkAuth, controller.previousStep);
 
 router.post("/change_actions", checkAuth, controller.changeActions);
+
+router.post("/restore_ifd_pipes", checkAuth, controller.restoreIFDPipes);
 
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
