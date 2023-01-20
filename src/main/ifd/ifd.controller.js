@@ -4,7 +4,7 @@ const {
   deletePipe,
   getPipesService,
   updateIFDPipesService,
-  addPipesService,
+  addIFDPipesService,
   getPipesFromTrayService,
   claimIFDPipesService,
   getMyPipesService,
@@ -150,7 +150,7 @@ exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await data.forEach(async (pipe, i) => {
-      await addPipesService(pipe, i);
+      await addIFDPipesService(pipe, i);
     });
     send(res, true);
   } catch (er) {
