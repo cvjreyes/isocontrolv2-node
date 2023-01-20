@@ -45,6 +45,6 @@ exports.formatStatus = (status) => {
   };
   return (
     list[status.toLowerCase()] ||
-    status.charAt(0) + status.slice(1).toLowerCase()
+    status.charAt(0) + status.slice(1).toLowerCase().replace("_", " ")
   );
 };

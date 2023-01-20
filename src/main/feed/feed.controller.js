@@ -48,7 +48,6 @@ exports.submitFeedPipes = async (req, res) => {
     await updateFeedPipesService(data);
     // if status is modelled => añadir a ifd_pipes
     send(res, true);
-    // this.getFeedPipes(req, res);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
