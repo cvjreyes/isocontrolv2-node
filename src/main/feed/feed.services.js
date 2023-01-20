@@ -72,14 +72,24 @@ exports.deletePipe = async (id) => {
   return pipes;
 };
 
-exports.addPipesService = async (pipe) => {
+exports.addFeedPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   const line_refno = await getLineRefno(pipe.line_reference);
   const [res] = await pool.query(
     "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
     [line_refno, area_id, pipe.diameter, pipe.train, pipe.status]
   );
+  if (pipe.status === "MODELLED(100%)"){
+    await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno)
+  }
   return res;
+};
+
+const addPipeFromFeedService = async (pipe, id, area, line_refno) => {
+  await pool.query(
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?, ?)",
+    [line_refno, id, area, pipe.diameter, pipe.train, "FEED_ESTIMATED"]
+  );
 };
 
 exports.addForecastService = async (day, estimated, forecast) => {

@@ -5,7 +5,7 @@ const {
   updateFeedPipesService,
   getProgressService,
   deletePipe,
-  addPipesService,
+  addFeedPipesService,
   getFeedForecastService,
   addForecastService,
 } = require("./feed.services");
@@ -81,7 +81,7 @@ exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
     data.forEach(async (pipe, i) => {
-      await addPipesService(pipe, i);
+      await addFeedPipesService(pipe, i);
     });
     send(res, true);
   } catch (er) {
