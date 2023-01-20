@@ -12,6 +12,6 @@ router.get("/get_owners", checkAuth, controller.getOwners);
 
 router.post("/login", controller.login);
 
-router.post("/change_password", controller.changePassword);
+router.post("/change_password", checkAuth, controller.changePassword);
 
 module.exports = router;
