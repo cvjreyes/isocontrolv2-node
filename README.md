@@ -36,6 +36,8 @@ Explicar:
 
 - pm2
 
+### (CRON TAB)[https://crontab.guru/]
+
 ### DATABASE
 
 - feed_forecast needs one column added: forecast
