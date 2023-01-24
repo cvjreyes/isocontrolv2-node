@@ -34,6 +34,9 @@ app.use("/ifc", require("./src/main/ifc/ifc.routes"));
 app.use("/lines", require("./src/main/lines/lines.routes"));
 app.use("/areas", require("./src/main/areas/areas.routes"));
 
+// NODE-CRON
+require("./src/main/ifd/ifd.node_cron")();
+
 // 404 HANDLING
 app.use("*", (req, res) => {
   var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;

@@ -28,7 +28,6 @@ exports.getMyPipesService = async (id) => {
     "SELECT SQL_NO_CACHE * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ?",
     [id, "ESTIMATED"]
   );
-  /// RE-CHECK THIS
   const rows = fillType(resRows);
   const rows2 = fillProgress(rows);
   const rowsEnd = rows2.map((row) => ({
@@ -91,7 +90,7 @@ exports.addIFDPipesService = async (pipe) => {
     area_id,
     line_refno
   );
-  const owner_id = await getOwnerId(pipe.owner);
+  const owner_id = pipe.owner ? await getOwnerId(pipe.owner) : null;
   const res = await pool.query(
     "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [
