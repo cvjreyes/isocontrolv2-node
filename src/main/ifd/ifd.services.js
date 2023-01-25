@@ -13,8 +13,11 @@ const {
 } = require("../../helpers/progressNumbers");
 const { withTransaction } = require("../../helpers/withTransaction");
 
-exports.getPipesService = async () => {
-  const [resRows] = await pool.query("SELECT * FROM ifd_pipes_view");
+exports.getPipesService = async (trashed) => {
+  const [resRows] = await pool.query(
+    "SELECT * FROM ifd_pipes_view WHERE trashed = ?",
+    trashed
+  );
   const rows = fillType(resRows);
   const rowsEnd = rows.map((row) => ({
     ...row,
@@ -25,7 +28,7 @@ exports.getPipesService = async () => {
 
 exports.getMyPipesService = async (id) => {
   const [resRows] = await pool.query(
-    "SELECT SQL_NO_CACHE * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ?",
+    "SELECT SQL_NO_CACHE * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ? AND trashed = 0",
     [id, "ESTIMATED"]
   );
   const rows = fillType(resRows);
@@ -40,7 +43,7 @@ exports.getMyPipesService = async (id) => {
 
 exports.getPipesFromTrayService = async (status) => {
   const [resRows] = await pool.query(
-    `SELECT * FROM ifd_pipes_view WHERE status LIKE '${status}%'`
+    `SELECT * FROM ifd_pipes_view WHERE status LIKE '${status}%' AND trashed = 0`
   );
   const rows = fillType(resRows);
   const rowsEnd = fillProgress(rows);
@@ -69,13 +72,29 @@ exports.updateIFDPipesService = async (data) => {
         )
     );
     if (ok) return true;
-    throw new Error("Something went wrong updating feed pipes");
+    throw new Error("Something went wrong updating ifd pipes");
   });
 };
 
 exports.deletePipe = async (id) => {
-  const [pipes] = await pool.query("DELETE FROM ifd_pipes WHERE id = ?", id);
+  const [pipes] = await pool.query(
+    "UPDATE ifd_pipes set trashed = 1 WHERE id = ?",
+    id
+  );
   return pipes;
+};
+
+exports.restoreIFDPipesService = async (data) => {
+  return await data.forEach(async (pipe) => {
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query("UPDATE ifd_pipes SET trashed = 0 WHERE id = ?", [
+          pipe.id,
+        ])
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong restoring ifd pipes");
+  });
 };
 
 exports.addIFDPipesService = async (pipe) => {
@@ -127,7 +146,7 @@ exports.nextStepService = async (data) => {
         )
     );
     if (ok) return true;
-    throw new Error("Something went wrong claiming feed pipes");
+    throw new Error("Something went wrong claiming ifd pipes");
   });
 };
 
@@ -144,7 +163,7 @@ exports.previousStepService = async (data) => {
         )
     );
     if (ok) return true;
-    throw new Error("Something went wrong claiming feed pipes");
+    throw new Error("Something went wrong claiming ifd pipes");
   });
 };
 
@@ -172,6 +191,6 @@ exports.claimIFDPipesService = async (data, user_id) => {
         ])
     );
     if (ok) return true;
-    throw new Error("Something went wrong claiming feed pipes");
+    throw new Error("Something went wrong claiming ifd pipes");
   });
 };
