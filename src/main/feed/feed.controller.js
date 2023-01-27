@@ -69,7 +69,6 @@ exports.deletePipe = async (req, res) => {
   const { id } = req.params;
   try {
     const del = await deletePipe(id);
-    // await updateFeedPipesService(rows);
     send(res, true, del);
   } catch (err) {
     console.error(err);
