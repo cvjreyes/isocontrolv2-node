@@ -78,7 +78,7 @@ exports.updateIFDPipesService = async (data) => {
 
 exports.deletePipe = async (id) => {
   const [pipes] = await pool.query(
-    "UPDATE ifd_pipes set trashed = 1 WHERE id = ?",
+    "UPDATE ifd_pipes SET trashed = 1, owner_id = NULL WHERE id = ?",
     id
   );
   return pipes;
