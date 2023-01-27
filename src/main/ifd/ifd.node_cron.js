@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 
 const getModelledFrom3D = async () => {
   const results = await csv().fromFile(process.env.NODE_DPIPES_ROUTE);
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < results.length; i++) {
     const row = results[i];
     const [found] = await pool.query(
       "SELECT * FROM ifd_pipes_view WHERE unit = ? AND fluid = ? AND seq = ? AND area = ? AND diameter = ? AND train = ?",
