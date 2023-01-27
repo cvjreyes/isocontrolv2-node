@@ -13,65 +13,41 @@ const {
   changeActionsService,
   restoreIFDPipesService,
 } = require("./ifd.services.js");
+const { progressNumbers } = require("../../helpers/progressNumbers");
 
 exports.getProgress = async (req, res) => {
-  // 1 calcular tipo de línea
-  // 2 calcular el total del peso de la sumatoria de líneas
-  //   tl1 = 6
-  //   tl2 = 10
-  //   tl3 = 20
-  // 3 calcular según datos de pestpies  p.e. TL1 Modelled = weight 3 / 6 ( 50% )
+  let totalWeight = 0;
+  let currentWeight = 0;
+
+  const weights = {
+    TL1: 6,
+    TL2: 10,
+    TL3: 20,
+  };
 
   try {
-    // const users = await findAllUsersService();
-    let estimated_weight = 0,
-      progress = 0;
-    //Select del diametro y CN de las lineas
-    const [res1] = await pool.query(
-      "SELECT `diameter`, `calc_notes` FROM ifd_pipes LEFT JOIN `lines` on ifd_pipes.line_refno = `lines`.refno"
+    const [data] = await pool.query(
+      "SELECT status, calc_notes, diameter FROM ifd_pipes_view WHERE trashed = 0"
     );
-    if (!res1[0]) return;
-    for (let i = 0; i < res1.length; i++) {
-      if (res1[i].calc_notes !== "NA" && res1[i].calc_notes !== "unset") {
-        estimated_weight += 10;
+    for (let i = 0; i < data.length; i++) {
+      let type;
+      if (data[i].calc_notes !== "NA" || data[i].calc_notes !== "unset") {
+        type = "TL3";
       } else if (
-        (process.env.NODE_NPSDN == 1 && res1[i].diameter < 2.0) ||
-        (process.env.NODE_NPSDN == 0 && res1[i].diameter < 50)
+        (process.env.NODE_NPSDN == "0" && data[i].diameter < 2.0) ||
+        (process.env.NODE_NPSDN == "1" && data[i].diameter < 50)
       ) {
-        estimated_weight += 3;
+        type = "TL1";
       } else {
-        estimated_weight += 5;
+        type = "TL2";
       }
+      const percentage =
+        progressNumbers[type][data[i].status.toLowerCase().replace("*", "")] ||
+        0;
+      totalWeight += weights[type];
+      currentWeight += (percentage * weights[type]) / 100;
     }
-    //Cogemos el peso actual de las lineas modeladas
-    const [res2] = await pool.query(
-      "SELECT stage1 as weight, valves, instruments FROM pipectrls LEFT JOIN pestpipes ON status_id = pestpipes.id"
-    );
-    let weight = 0;
-    if (!res2[0]) return;
-    for (let i = 0; i < res2.length; i++) {
-      weight += res2[i].weight;
-      if (res2[i].valves || res2[i].instruments) {
-        weight += 1;
-      }
-    }
-    const [res3] = await pool.query(
-      "SELECT diameter, calc_notes FROM ifd_pipes_view LEFT JOIN `lines` ON ifd_pipes_view.line_reference = `lines`.line_reference WHERE status COLLATE utf8mb4_unicode_ci = ?",
-      ["ESTIMATED"]
-    );
-    if (!res3[0]) return;
-
-    for (let i = 0; i < res3.length; i++) {
-      if (res3[i].calc_notes != "unset" && res3[i].calc_notes) {
-        weight += 1;
-      } else if (res3[i].diameter < 2) {
-        weight += 0.5;
-      } else {
-        weight += 0.3;
-      }
-    }
-    // progress = ((weight / estimated_weight) * 100).toFixed(2);
-    progress = (weight / estimated_weight).toFixed(2);
+    const progress = ((currentWeight / totalWeight) * 100).toFixed(2);
     return send(res, true, progress);
   } catch (err) {
     console.error(err);
@@ -214,4 +190,4 @@ exports.restoreIFDPipes = async (req, res) => {
     console.error(err);
     return send(res, false, err);
   }
-}
+};
