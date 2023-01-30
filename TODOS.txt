@@ -1,8 +1,20 @@
 DONE ✔:
 - create readme
+- REVISAR IFD WEIGHT
 
 TO DO ❌:
-- REVISAR IFD WEIGHT ! 
+- line_refno
+- LINES:
+  - cron update lines según servidor cada 10min
+  - chequear si existe el line_reference dentro de LINES
+    - ANTES ( PROs: rápido, CONTRAs: daba problemas ): 
+      - truncate a la tabla
+      - insert de datos sergún csv
+    - PROBAR ( PROs: intentar evitar problemas, CONTRAs: mas lento ( en ppio ) ):
+      - chequear si existe el line_reference + insulation + calc_notes + stress_level + pid
+      - si existe => no hacer nada
+      - si no existe => añadir line
+      - las lines en bdd que no hayan sido chqueadas => eliminarlas
 - replace all users created_at and updated_at null || undefined || 0:00:00 => Date.now() TO AVOID ERRORS
 - no actual need for token to be saved into db, jwt handles it for you
 - REVISAR WITHTRANSACTION DEL ADD FEED PIPES
