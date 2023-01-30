@@ -91,8 +91,8 @@ exports.addFeedPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   const line_refno = await getLineRefno(pipe.line_reference);
   const [res] = await pool.query(
-    "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
-    [line_refno, area_id, pipe.diameter, pipe.train, pipe.status]
+    "INSERT INTO feed_pipes (line_refno, area_id, train, status) VALUES (?, ?, ?, ?)",
+    [line_refno, area_id, pipe.train, pipe.status]
   );
   if (pipe.status === "MODELLED(100%)") {
     await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno);
