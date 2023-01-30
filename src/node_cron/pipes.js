@@ -8,7 +8,6 @@ const getModelledFrom3D = async () => {
   for (let i = 0; i < 5; i++) {
     // for (let i = 0; i < results.length; i++) {
     const row = results[i];
-    // console.log(row);
     // const [found] = await pool.query(
     //   "SELECT * FROM ifd_pipes_view WHERE unit = ? AND fluid = ? AND seq = ? AND area = ? AND diameter = ? AND train = ?",
     //   [row.unit, row.fluid, row.seq, row.area, Number(row.diameter), row.train]
@@ -29,7 +28,6 @@ const updateLines = async () => {
   // insert data from csv
   for (let i = 0; i < results.length; i++) {
     const line = results[i];
-    console.log(i, line);
     await pool.query(
       "INSERT INTO `lines` (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [

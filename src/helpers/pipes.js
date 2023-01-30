@@ -39,15 +39,6 @@ exports.getAreaId = async (area) => {
   return area_id[0].id;
 };
 
-exports.getLineRefno = async (line_ref) => {
-  const [refno] = await pool.query(
-    "SELECT refno FROM `lines` WHERE line_reference = ?",
-    line_ref.trim()
-  );
-  if (!refno[0].refno) throw new Error("Line reference is incorrect");
-  return refno[0].refno;
-};
-
 exports.getOwnerId = async (name) => {
   const [owner] = await pool.query("SELECT id FROM users WHERE name = ?", name);
   if (!owner[0].id) throw new Error("Line reference is incorrect");

@@ -2,7 +2,6 @@ const pool = require("../../../config/db");
 const {
   fillType,
   getAreaId,
-  getLineRefno,
   getOwnerId,
   fillProgress,
 } = require("../../helpers/pipes");
@@ -53,16 +52,14 @@ exports.getPipesFromTrayService = async (status) => {
 exports.updateIFDPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
-    const line_refno = await getLineRefno(pipe.line_reference);
     const owner_id = pipe.owner ? await getOwnerId(pipe.owner) : null;
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
-          "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, diameter = ?, train = ?, status = ?, feed_id = ?, owner_id = ? WHERE id = ?",
+          "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, train = ?, status = ?, feed_id = ?, owner_id = ? WHERE id = ?",
           [
-            line_refno,
+            pipe.line_refno,
             area_id,
-            pipe.diameter,
             pipe.train,
             pipe.status,
             pipe.id,
@@ -99,36 +96,24 @@ exports.restoreIFDPipesService = async (data) => {
 
 exports.addIFDPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
-  const line_refno = await getLineRefno(pipe.line_reference);
   // añadir pipe en feed_pipes y coger feed_id
-  const { insertId } = await addFeedPipesFromIFDService(
-    {
-      ...pipe,
-      status: "MODELLED(100%)",
-    },
+  const { insertId } = await addFeedPipesFromIFDService({
+    ...pipe,
+    status: "MODELLED(100%)",
     area_id,
-    line_refno
-  );
+  });
   const owner_id = pipe.owner ? await getOwnerId(pipe.owner) : null;
   const res = await pool.query(
-    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [
-      line_refno,
-      insertId,
-      area_id,
-      pipe.diameter,
-      pipe.train,
-      pipe.status,
-      owner_id,
-    ]
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status, owner_id) VALUES (?, ?, ?, ?, ?, ?)",
+    [pipe.line_refno, insertId, area_id, pipe.train, pipe.status, owner_id]
   );
   return res;
 };
 
-const addFeedPipesFromIFDService = async (pipe, area, line_refno) => {
+const addFeedPipesFromIFDService = async (pipe) => {
   const [res] = await pool.query(
-    "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
-    [line_refno, area, pipe.diameter, pipe.train, pipe.status]
+    "INSERT INTO feed_pipes (line_refno, area_id, train, status) VALUES (?, ?, ?, ?)",
+    [pipe.line_refno, pipe.area_id, pipe.train, pipe.status]
   );
   return res;
 };
