@@ -8,6 +8,8 @@ router.get("/get_feed_pipes", checkAuth, controller.getFeedPipes);
 
 router.get("/get_forecast", checkAuth, controller.getFeedForecast);
 
+router.get("/get_gfeed", checkAuth, controller.getGFeed);
+
 router.post("/submit_feed_pipes", checkAuth, controller.submitFeedPipes);
 
 router.post("/add_pipes", checkAuth, controller.addPipes);

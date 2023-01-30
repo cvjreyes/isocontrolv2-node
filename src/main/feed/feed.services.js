@@ -34,6 +34,13 @@ exports.getFeedForecastService = async () => {
   return pipes;
 };
 
+exports.getGFeedService = async () => {
+  const [pipes] = await pool.query(
+    "SELECT gfeed.*, feed_forecast.estimated, feed_forecast.forecast FROM gfeed JOIN feed_forecast ON gfeed.id = feed_forecast.`day`"
+  );
+  return pipes;
+};
+
 exports.getFEEDPipeService = async (id) => {
   const [pipe] = await pool.query("SELECT * FROM feed_pipes WHERE id = ?", id);
   return pipe[0];
