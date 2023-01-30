@@ -1,7 +1,7 @@
 const pool = require("../../../config/db");
 
 const { withTransaction } = require("../../helpers/withTransaction");
-const { getAreaId, getLineRefno } = require("../../helpers/pipes");
+const { getAreaId } = require("../../helpers/pipes");
 const { addPipeToIFD, removePipeFromIFD } = require("./feed.microservices");
 
 exports.getProgressService = async (tableName) => {
@@ -50,7 +50,6 @@ exports.getFEEDPipeService = async (id) => {
 exports.updateFeedPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
-    // const line_refno = await getLineRefno(pipe.line_reference);
     const { status: previousStatus } = await this.getFEEDPipeService(pipe.id);
     const { ok } = await withTransaction(
       async () =>
@@ -89,10 +88,9 @@ exports.deletePipe = async (id) => {
 
 exports.addFeedPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
-  const line_refno = await getLineRefno(pipe.line_reference);
   const [res] = await pool.query(
     "INSERT INTO feed_pipes (line_refno, area_id, train, status) VALUES (?, ?, ?, ?)",
-    [line_refno, area_id, pipe.train, pipe.status]
+    [pipe.line_refno, area_id, pipe.train, pipe.status]
   );
   if (pipe.status === "MODELLED(100%)") {
     await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno);
