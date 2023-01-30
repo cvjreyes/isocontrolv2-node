@@ -19,11 +19,6 @@ TO DO ❌:
 - no actual need for token to be saved into db, jwt handles it for you
 - REVISAR WITHTRANSACTION DEL ADD FEED PIPES
 
-- ¡ REVISAR ESTO QUÉ ES QUÉ HACE !
-  const [res3] = await pool.query(
-      "SELECT stage1 as weight, valves, instruments FROM pipectrls LEFT JOIN pestpipes ON status_id = pestpipes.id"
-    );
-
 BBDD USADAS
 - areas
 - diameters
@@ -31,6 +26,10 @@ BBDD USADAS
 - users
 - feed_pipes
 - ifd_pipes
+- feed_forecast
+- gfeed
+- model_has_roles ? re-check
+- roles ? re-check
 
 VIEW USADAS
 -  feed_pipes_view

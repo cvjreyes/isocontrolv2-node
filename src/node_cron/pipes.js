@@ -1,9 +1,10 @@
 const cron = require("node-cron");
 const csv = require("csvtojson");
-const pool = require("../../../config/db");
+
+const pool = require("../../config/db");
 
 const getModelledFrom3D = async () => {
-  const results = await csv().fromFile(process.env.NODE_LINES_ROUTE);
+  const results = await csv().fromFile(process.env.NODE_DPIPES_ROUTE);
   for (let i = 0; i < 5; i++) {
     // for (let i = 0; i < results.length; i++) {
     const row = results[i];
@@ -21,7 +22,32 @@ const getModelledFrom3D = async () => {
   }
 };
 
-const updateLines = async () => {};
+const updateLines = async () => {
+  const results = await csv().fromFile(process.env.NODE_LINES_ROUTE);
+  // truncate table
+  await pool.query("TRUNCATE TABLE `lines`");
+  // insert data from csv
+  for (let i = 0; i < results.length; i++) {
+    const line = results[i];
+    console.log(i, line);
+    await pool.query(
+      "INSERT INTO `lines` (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        line.refno,
+        line.tag,
+        line.unit,
+        line.fluid,
+        line.seq,
+        line.spec,
+        line.pid,
+        line.strlvl,
+        line.cnote,
+        line.insulation,
+        line.diam,
+      ]
+    );
+  }
+};
 
 const cronFn = () => {
   // cron.schedule("*/5 * * * *", () => {

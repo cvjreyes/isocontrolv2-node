@@ -1,4 +1,5 @@
 const pool = require("../../../config/db");
+
 const { withTransaction } = require("../../helpers/withTransaction");
 const { getAreaId, getLineRefno } = require("../../helpers/pipes");
 const { addPipeToIFD, removePipeFromIFD } = require("./feed.microservices");
@@ -49,20 +50,27 @@ exports.getFEEDPipeService = async (id) => {
 exports.updateFeedPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
-    const line_refno = await getLineRefno(pipe.line_reference);
+    // const line_refno = await getLineRefno(pipe.line_reference);
     const { status: previousStatus } = await this.getFEEDPipeService(pipe.id);
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
           "UPDATE feed_pipes SET line_refno = ?, area_id = ?, diameter = ?, train = ?, status = ? WHERE id = ?",
-          [line_refno, area_id, pipe.diameter, pipe.train, pipe.status, pipe.id]
+          [
+            pipe.line_refno,
+            area_id,
+            pipe.diameter,
+            pipe.train,
+            pipe.status,
+            pipe.id,
+          ]
         )
     );
     if (
       pipe.status.toLowerCase().includes("modelled") &&
       !previousStatus.toLowerCase().includes("modelled")
     ) {
-      await addPipeToIFD(pipe, area_id, line_refno);
+      await addPipeToIFD(pipe, area_id, pipe.line_refno);
     } else if (
       previousStatus.toLowerCase().includes("modelled") &&
       !pipe.status.toLowerCase().includes("modelled")
@@ -86,8 +94,8 @@ exports.addFeedPipesService = async (pipe) => {
     "INSERT INTO feed_pipes (line_refno, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?)",
     [line_refno, area_id, pipe.diameter, pipe.train, pipe.status]
   );
-  if (pipe.status === "MODELLED(100%)"){
-    await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno)
+  if (pipe.status === "MODELLED(100%)") {
+    await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno);
   }
   return res;
 };
