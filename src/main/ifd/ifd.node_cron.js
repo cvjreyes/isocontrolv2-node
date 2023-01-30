@@ -21,9 +21,14 @@ const getModelledFrom3D = async () => {
   }
 };
 
+const updateLines = async () => {};
+
 const cronFn = () => {
-  cron.schedule("* * * * *", () => {
-    getModelledFrom3D();
+  // cron.schedule("*/5 * * * *", () => {
+  //   getModelledFrom3D();
+  // });
+  cron.schedule("*/10 * * * *", () => {
+    updateLines();
   });
 };
 
