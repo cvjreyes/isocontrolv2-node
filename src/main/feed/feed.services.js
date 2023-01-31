@@ -2,7 +2,11 @@ const pool = require("../../../config/db");
 
 const { withTransaction } = require("../../helpers/withTransaction");
 const { getAreaId } = require("../../helpers/pipes");
-const { addPipeToIFD, removePipeFromIFD, updatePipeInIFD } = require("./feed.microservices");
+const {
+  addPipeToIFD,
+  removePipeFromIFD,
+  updatePipeInIFD,
+} = require("./feed.microservices");
 
 exports.getProgressService = async (tableName) => {
   const [pipes] = await pool.query(`SELECT status FROM ${tableName}`);
@@ -58,7 +62,6 @@ exports.updateFeedPipesService = async (data) => {
           [pipe.line_refno, area_id, pipe.train, pipe.status, pipe.id]
         )
     );
-    console.log("Id de feed: ", pipe.id);
     if (
       pipe.status.toLowerCase().includes("modelled") &&
       !previousStatus.toLowerCase().includes("modelled")
@@ -70,7 +73,7 @@ exports.updateFeedPipesService = async (data) => {
     ) {
       await removePipeFromIFD(pipe.id);
     } else {
-      await updatePipeInIFD(pipe, area_id)
+      await updatePipeInIFD(pipe, area_id);
     }
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
@@ -79,6 +82,7 @@ exports.updateFeedPipesService = async (data) => {
 
 exports.deletePipe = async (id) => {
   const [pipes] = await pool.query("DELETE FROM feed_pipes WHERE id = ?", id);
+  await pool.query("DELETE FROM ifd_pipes WHERE feed_id = ?", id);
   return pipes;
 };
 
