@@ -2,13 +2,6 @@ TO DO ❌:
 - replace all users created_at and updated_at null || undefined || 0:00:00 => Date.now() TO AVOID ERRORS
 - no actual need for token to be saved into db, jwt handles it for you
 - REVISAR WITHTRANSACTION DEL ADD FEED PIPES
-- CPIPES:
-  - cada 10min ejecutar fn
-  - leer BDD ifd_pipes
-  - seleccionar las pipes que no sean estimated
-  - va a crear un archivo .mac con código PML
-  - en el archivo va a estar la información de todas las pipes que no estén estimated
-  - el archivo va a guardarse en: NODE_CPIPES_ROUTE 
 
 BBDD USADAS
 - areas

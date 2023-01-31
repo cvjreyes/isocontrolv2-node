@@ -2,6 +2,7 @@ const cron = require("node-cron");
 const csv = require("csvtojson");
 
 const pool = require("../../config/db");
+const { buildRow, deleteFile, writeFile, copyFile } = require("./pipes.helper");
 
 const getModelledFrom3D = async () => {
   const results = await csv().fromFile(process.env.NODE_DPIPES_ROUTE);
@@ -23,9 +24,7 @@ const getModelledFrom3D = async () => {
 
 const updateLines = async () => {
   const results = await csv().fromFile(process.env.NODE_LINES_ROUTE);
-  // truncate table
   await pool.query("TRUNCATE TABLE `lines`");
-  // insert data from csv
   for (let i = 0; i < results.length; i++) {
     const line = results[i];
     await pool.query(
@@ -47,12 +46,35 @@ const updateLines = async () => {
   }
 };
 
+const exportModelledPipes = async () => {
+  // prepare data
+  const [pipes] = await pool.query("SELECT * FROM ifd_pipes_view");
+  let data = "TAGS\nONERROR CONTINUE\n/Cpipes\n";
+  pipes.forEach((pipe) => {
+    data += buildRow(pipe);
+  });
+  data += "SAVEWORK\nUNCLAIM ALL\nFINISH";
+  const fileName = "test_pml.mac";
+  // file operations
+  const written = await writeFile(data, fileName);
+  if (written) {
+    const copied = await copyFile(fileName);
+    if (copied) {
+      await deleteFile(fileName);
+    }
+  }
+  return;
+};
+
 const cronFn = () => {
   // cron.schedule("*/5 * * * *", () => {
   //   getModelledFrom3D();
   // });
-  cron.schedule("* * * * *", () => {
+  cron.schedule("*/10 * * * *", () => {
     updateLines();
+  });
+  cron.schedule("*/10 * * * *", () => {
+    exportModelledPipes();
   });
 };
 
