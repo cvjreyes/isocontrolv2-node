@@ -52,9 +52,7 @@ const cronFn = () => {
   //   getModelledFrom3D();
   // });
   cron.schedule("* * * * *", () => {
-    console.time();
     updateLines();
-    console.timeEnd();
   });
 };
 
