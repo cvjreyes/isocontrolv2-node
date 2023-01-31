@@ -27,7 +27,7 @@ exports.getPipesService = async (trashed) => {
 
 exports.getMyPipesService = async (id) => {
   const [resRows] = await pool.query(
-    "SELECT SQL_NO_CACHE * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ? AND trashed = 0",
+    "SELECT * FROM ifd_pipes_view WHERE owner_id = ? AND status <> ? AND trashed = 0",
     [id, "ESTIMATED"]
   );
   const rows = fillType(resRows);

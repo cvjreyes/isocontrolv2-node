@@ -51,8 +51,10 @@ const cronFn = () => {
   // cron.schedule("*/5 * * * *", () => {
   //   getModelledFrom3D();
   // });
-  cron.schedule("*/10 * * * *", () => {
+  cron.schedule("* * * * *", () => {
+    console.time();
     updateLines();
+    console.timeEnd();
   });
 };
 

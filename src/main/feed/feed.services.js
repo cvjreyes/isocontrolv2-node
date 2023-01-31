@@ -54,15 +54,8 @@ exports.updateFeedPipesService = async (data) => {
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
-          "UPDATE feed_pipes SET line_refno = ?, area_id = ?, diameter = ?, train = ?, status = ? WHERE id = ?",
-          [
-            pipe.line_refno,
-            area_id,
-            pipe.diameter,
-            pipe.train,
-            pipe.status,
-            pipe.id,
-          ]
+          "UPDATE feed_pipes SET line_refno = ?, area_id = ?, train = ?, status = ? WHERE id = ?",
+          [pipe.line_refno, area_id, pipe.train, pipe.status, pipe.id]
         )
     );
     if (
