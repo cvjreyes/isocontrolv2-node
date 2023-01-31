@@ -62,12 +62,12 @@ exports.updateIFDPipesService = async (data) => {
             pipe.line_refno,
             area_id,
             pipe.train,
-            pipe.status,
+            pipe.status.toUpperCase().replace(" ", "_"),
             owner_id,
             pipe.id,
           ]
         ),
-        await updatePipeInFeed(pipe, area_id)
+      await updatePipeInFeed(pipe, area_id)
     );
 
     if (ok) return true;
