@@ -96,8 +96,8 @@ exports.addFeedPipesService = async (pipe) => {
 
 const addPipeFromFeedService = async (pipe, id, area, line_refno) => {
   await pool.query(
-    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?, ?)",
-    [line_refno, id, area, pipe.diameter, pipe.train, "FEED_ESTIMATED"]
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
+    [line_refno, id, area, pipe.train, "FEED_ESTIMATED"]
   );
 };
 
