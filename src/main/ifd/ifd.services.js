@@ -58,16 +58,9 @@ exports.updateIFDPipesService = async (data) => {
       async () =>
         await pool.query(
           "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, train = ?, status = ?, owner_id = ? WHERE id = ?",
-          [
-            pipe.line_refno,
-            area_id,
-            pipe.train,
-            pipe.status,
-            owner_id,
-            pipe.id,
-          ]
+          [pipe.line_refno, area_id, pipe.train, pipe.status, owner_id, pipe.id]
         ),
-        await updatePipeInFeed(pipe, area_id)
+      await updatePipeInFeed(pipe, area_id)
     );
 
     if (ok) return true;
