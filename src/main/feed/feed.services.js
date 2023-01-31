@@ -62,7 +62,6 @@ exports.updateFeedPipesService = async (data) => {
           [pipe.line_refno, area_id, pipe.train, pipe.status, pipe.id]
         )
     );
-    console.log("Id de feed: ", pipe.id);
     if (
       pipe.status.toLowerCase().includes("modelled") &&
       !previousStatus.toLowerCase().includes("modelled")
