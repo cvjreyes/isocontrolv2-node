@@ -11,6 +11,7 @@ const {
   calculatePreviousStep,
 } = require("../../helpers/progressNumbers");
 const { withTransaction } = require("../../helpers/withTransaction");
+const { updatePipeInFeed } = require("./ifd.microservices");
 
 exports.getPipesService = async (trashed) => {
   const [resRows] = await pool.query(
@@ -56,18 +57,19 @@ exports.updateIFDPipesService = async (data) => {
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
-          "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, train = ?, status = ?, feed_id = ?, owner_id = ? WHERE id = ?",
+          "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, train = ?, status = ?, owner_id = ? WHERE id = ?",
           [
             pipe.line_refno,
             area_id,
             pipe.train,
-            pipe.status,
-            pipe.id,
+            pipe.status.toUpperCase().replace(" ", "_"),
             owner_id,
             pipe.id,
           ]
-        )
+        ),
+      await updatePipeInFeed(pipe, area_id)
     );
+
     if (ok) return true;
     throw new Error("Something went wrong updating ifd pipes");
   });
