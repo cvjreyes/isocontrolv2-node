@@ -47,7 +47,9 @@ exports.getProgress = async (req, res) => {
       totalWeight += weights[type];
       currentWeight += (percentage * weights[type]) / 100;
     }
-    const progress = ((currentWeight / totalWeight) * 100).toFixed(2);
+    const progress = !totalWeight
+      ? 0
+      : ((currentWeight / totalWeight) * 100).toFixed(2);
     return send(res, true, progress);
   } catch (err) {
     console.error(err);
