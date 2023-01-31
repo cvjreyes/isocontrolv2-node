@@ -16,15 +16,15 @@ app.use(require("hpp")()); // middleware to protect against HTTP Parameter Pollu
 // adding limiter to /user requests to stop brute force attacks
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  max: 300, // Limit each IP to 300 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: "Too many requests from this IP, please try again after an hour",
 });
 
 // To use the rate limiting middleware to certain API calls only, you can select routes like this:
-// - app.use('/user', apiLimiter)
-app.use(apiLimiter);
+app.use("/users", apiLimiter);
+// app.use(apiLimiter);
 
 // ROUTES
 app.use("/users", require("./src/main/users/user.routes"));
