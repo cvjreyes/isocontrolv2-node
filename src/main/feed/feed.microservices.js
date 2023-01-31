@@ -12,3 +12,11 @@ exports.removePipeFromIFD = async (id) => {
   const [res] = await pool.query("DELETE FROM ifd_pipes WHERE feed_id = ?", id);
   return res;
 };
+
+exports.updatePipeInIFD = async (pipe, area_id) => {
+  const [res] = await pool.query(
+    "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, train = ? WHERE feed_id = ?",
+    [pipe.line_refno, area_id, pipe.train, pipe.id]
+  );
+  return res;
+};

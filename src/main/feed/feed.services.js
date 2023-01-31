@@ -2,7 +2,7 @@ const pool = require("../../../config/db");
 
 const { withTransaction } = require("../../helpers/withTransaction");
 const { getAreaId } = require("../../helpers/pipes");
-const { addPipeToIFD, removePipeFromIFD } = require("./feed.microservices");
+const { addPipeToIFD, removePipeFromIFD, updatePipeInIFD } = require("./feed.microservices");
 
 exports.getProgressService = async (tableName) => {
   const [pipes] = await pool.query(`SELECT status FROM ${tableName}`);
@@ -58,6 +58,7 @@ exports.updateFeedPipesService = async (data) => {
           [pipe.line_refno, area_id, pipe.train, pipe.status, pipe.id]
         )
     );
+    console.log("Id de feed: ", pipe.id);
     if (
       pipe.status.toLowerCase().includes("modelled") &&
       !previousStatus.toLowerCase().includes("modelled")
@@ -68,6 +69,8 @@ exports.updateFeedPipesService = async (data) => {
       !pipe.status.toLowerCase().includes("modelled")
     ) {
       await removePipeFromIFD(pipe.id);
+    } else {
+      await updatePipeInIFD(pipe, area_id)
     }
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
@@ -86,7 +89,7 @@ exports.addFeedPipesService = async (pipe) => {
     [pipe.line_refno, area_id, pipe.train, pipe.status]
   );
   if (pipe.status === "MODELLED(100%)") {
-    await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno);
+    await addPipeFromFeedService(pipe, res.insertId, area_id, pipe.line_refno);
   }
   return res;
 };
