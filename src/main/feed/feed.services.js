@@ -86,15 +86,15 @@ exports.addFeedPipesService = async (pipe) => {
     [pipe.line_refno, area_id, pipe.train, pipe.status]
   );
   if (pipe.status === "MODELLED(100%)") {
-    await addPipeFromFeedService(pipe, res.insertId, area_id, line_refno);
+    await addPipeFromFeedService(pipe, res.insertId, area_id, pipe.line_refno);
   }
   return res;
 };
 
 const addPipeFromFeedService = async (pipe, id, area, line_refno) => {
   await pool.query(
-    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, diameter, train, status) VALUES (?, ?, ?, ?, ?, ?)",
-    [line_refno, id, area, pipe.diameter, pipe.train, "FEED_ESTIMATED"]
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
+    [line_refno, id, area, pipe.train, "FEED_ESTIMATED"]
   );
 };
 
