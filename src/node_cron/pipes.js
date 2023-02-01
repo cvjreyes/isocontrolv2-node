@@ -114,7 +114,7 @@ const cronFn = () => {
   cron.schedule("*/10 * * * *", () => {
     exportModelledPipes();
   });
-  cron.schedule("0 1 * * *", async () => {
+  cron.schedule("0 1 * * 5", async () => {
     saveFeedWeight();
   });
 };
