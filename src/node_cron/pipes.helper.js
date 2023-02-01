@@ -23,33 +23,9 @@ const buildTag = (pipe) => {
 
 exports.writeFile = async (data, fileName) => {
   try {
-    await fs.writeFile(`C:/Temp/${fileName}`, data);
-    return true;
+    await fs.writeFile(`${process.env.NODE_CPIPES_ROUTE}/${fileName}`, data);
   } catch (err) {
     console.error(err);
-    return false;
-  }
-};
-
-exports.copyFile = async (fileName) => {
-  try {
-    await fs.copyFile(
-      `C:/Temp/${fileName}`,
-      `${process.env.NODE_CPIPES_ROUTE}/${fileName}`
-    );
-    return true;
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-};
-
-exports.deleteFile = async (fileName) => {
-  try {
-    await fs.unlink(`C:/Temp/${fileName}`);
-    return true;
-  } catch (err) {
-    console.error(err);
-    return false;
+    throw err;
   }
 };
