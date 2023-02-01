@@ -3,10 +3,10 @@ const { progressNumbers } = require("./progressNumbers");
 
 exports.fillType = (data) => {
   for (let i = 0; i < data.length; i++) {
-    console.log(data[i].calc_notes, data[i].diameter);
     if (
       data[i].calc_notes &&
-      (data[i].calc_notes !== "NA" || data[i].calc_notes !== "unset")
+      data[i].calc_notes !== "NA" &&
+      data[i].calc_notes !== "unset"
     ) {
       data[i].type = "TL3";
     } else if (
