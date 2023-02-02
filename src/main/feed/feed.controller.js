@@ -9,6 +9,7 @@ const {
   getFeedForecastService,
   getGFeedService,
   addForecastService,
+  deleteForecastService,
 } = require("./feed.services");
 
 exports.getProgress = async (req, res) => {
@@ -67,9 +68,9 @@ exports.submitFeedPipes = async (req, res) => {
 };
 
 exports.submitForecast = async (req, res) => {
-  const { day, estimated, forecast } = req.body;
+  const { data } = req.body;
   try {
-    await addForecastService(day, estimated, forecast);
+    await addForecastService(data);
     send(res, true);
   } catch (err) {
     console.error(err);
@@ -96,6 +97,17 @@ exports.addPipes = async (req, res) => {
     });
     send(res, true);
   } catch (er) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.deleteForecast = async (req, res) => {
+  const { week } = req.params;
+  try {
+    await deleteForecastService(week);
+    return send(res, true);
+  } catch (err) {
     console.error(err);
     return send(res, false, err);
   }
