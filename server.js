@@ -33,6 +33,7 @@ app.use("/ifd", require("./src/main/ifd/ifd.routes"));
 app.use("/ifc", require("./src/main/ifc/ifc.routes"));
 app.use("/lines", require("./src/main/lines/lines.routes"));
 app.use("/areas", require("./src/main/areas/areas.routes"));
+app.use("/navis", require("./src/main/navis/navis.routes"));
 
 // NODE-CRON
 require("./src/node_cron/pipes")();
