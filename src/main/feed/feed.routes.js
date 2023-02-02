@@ -18,4 +18,6 @@ router.post("/submit_forecast", checkAuth, controller.submitForecast);
 
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
+router.delete("/delete_forecast/:week", checkAuth, controller.deleteForecast);
+
 module.exports = router;

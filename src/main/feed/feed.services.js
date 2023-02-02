@@ -41,7 +41,7 @@ exports.getFeedForecastService = async () => {
 
 exports.getGFeedService = async () => {
   const [pipes] = await pool.query(
-    "SELECT gfeed.*, feed_forecast.estimated, feed_forecast.forecast FROM gfeed JOIN feed_forecast ON gfeed.id = feed_forecast.`day`"
+    "SELECT gfeed.*, feed_forecast.estimated, feed_forecast.forecast FROM gfeed JOIN feed_forecast ON gfeed.id = feed_forecast.`week`"
   );
   return pipes;
 };
@@ -105,14 +105,25 @@ const addPipeFromFeedService = async (pipe, id, area, line_refno) => {
   );
 };
 
-exports.addForecastService = async (day, estimated, forecast) => {
-  const { ok } = await withTransaction(
-    async () =>
-      await pool.query(
-        "INSERT INTO feed_forecast(day, estimated, forecast) VALUES(?,?,?)",
-        [day, estimated, forecast]
-      )
+exports.addForecastService = async (data) => {
+  try {
+    data.forEach(async (item) => {
+      await pool.query("CALL add_feed_forecast (?, ?, ?)", [
+        item.week,
+        item.estimated,
+        item.forecast,
+      ]);
+    });
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Something went wrong updating feed pipes");
+  }
+};
+
+exports.deleteForecastService = async (week) => {
+  const [res] = await pool.query(
+    "DELETE FROM feed_forecast WHERE week = ?",
+    week
   );
-  if (ok) return true;
-  throw new Error("Something went wrong updating feed pipes");
 };
