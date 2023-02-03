@@ -34,7 +34,7 @@ exports.getFeedPipesService = async () => {
 
 exports.getFeedForecastService = async () => {
   const [pipes] = await pool.query(
-    "SELECT * FROM feed_forecast ORDER BY id DESC"
+    "SELECT * FROM feed_forecast ORDER BY week DESC"
   );
   return pipes;
 };
@@ -122,8 +122,5 @@ exports.addForecastService = async (data) => {
 };
 
 exports.deleteForecastService = async (week) => {
-  const [res] = await pool.query(
-    "DELETE FROM feed_forecast WHERE week = ?",
-    week
-  );
+  await pool.query("DELETE FROM feed_forecast WHERE week = ?", week);
 };
