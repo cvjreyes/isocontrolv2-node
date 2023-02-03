@@ -4,9 +4,11 @@ const {
   checkIfUserExistsService,
   getOwnersService,
   changePasswordService,
+  createAdminService,
+  createUserService,
 } = require("./user.services");
 const validator = require("validator");
-const { validatePassword } = require("./user.validations");
+const { validatePassword, checkIfEmailExists } = require("./user.validations");
 const { send } = require("../../helpers/send");
 const { createToken } = require("../../helpers/token");
 
@@ -77,6 +79,37 @@ exports.changePassword = async (req, res) => {
     if (!validatedPassword) return send(res, false, "Invalid credentials");
     const updated = await changePasswordService(new_password, user_id);
     return send(res, true, "Password updated successfully!");
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.createAdmin = async (req, res) => {
+  const { email, pw } = req.body;
+  try {
+    const ok = await createAdminService(email.trim(), pw.trim());
+    if (ok) return send(res, true);
+    return send(res, false, "Stop inventing");
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.create = async (req, res) => {
+  const { data } = req.body;
+  try {
+    const validCredentials = data.every((x) => validator.isEmail(x.email));
+    if (!validCredentials)
+      return send(res, false, "All emails should be valid");
+    const allUsersNonexistent = data.every(
+      async (x) => await checkIfEmailExists(x.email)
+    );
+    if (allUsersNonexistent) return send(res, false, "Some user already exist");
+    const ok = await createUserService(data);
+    if (ok) return send(res, true);
+    return send(res, false, "Stop inventing");
   } catch (err) {
     console.error(err);
     send(res, false, err);

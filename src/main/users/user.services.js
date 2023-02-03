@@ -1,5 +1,7 @@
 const md5 = require("md5");
 const pool = require("../../../config/db");
+const { checkIfEmailExists } = require("./user.validations");
+const { getName } = require("./users.helpers");
 
 exports.findAllUsersService = async () => {
   const [users] = await pool.query("SELECT * FROM users");
@@ -31,4 +33,27 @@ exports.changePasswordService = async (pw, user_id) => {
     [md5(pw), user_id]
   );
   return updated;
+};
+
+exports.createAdminService = async (email, pw) => {
+  const exists = await checkIfEmailExists(email);
+  if (exists) return false;
+  const encryptedPw = md5(pw);
+  const fullName = getName(email);
+  await pool.query(
+    "INSERT INTO users (name, email, password, admin) VALUES (?, ?, ?, 1)",
+    [fullName, email, encryptedPw]
+  );
+  return true;
+};
+
+exports.createUserService = async (data) => {
+  data.forEach(async ({ email }) => {
+    const [res] = await pool.query(
+      "INSERT INTO users (name, email) VALUES (?, ?)",
+      [getName(email), email]
+    );
+    console.log(res);
+  });
+  return true;
 };
