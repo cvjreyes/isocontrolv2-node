@@ -6,6 +6,7 @@ const {
   changePasswordService,
   createAdminService,
   createUserService,
+  getUserRolesService,
 } = require("./user.services");
 const validator = require("validator");
 const { validatePassword, checkIfEmailsExist } = require("./user.validations");
@@ -26,7 +27,8 @@ exports.getUserInfo = async (req, res) => {
   try {
     const { user_id } = req;
     const user = await getUserService(user_id);
-    return send(res, true, user);
+    const roles = await getUserRolesService(user_id);
+    return send(res, true, { ...user, roles });
   } catch (err) {
     console.error(err);
     send(res, false, err);

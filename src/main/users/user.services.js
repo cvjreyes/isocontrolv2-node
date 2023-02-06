@@ -13,6 +13,14 @@ exports.getUserService = async (userId) => {
   return user[0];
 };
 
+exports.getUserRolesService = async (user_id) => {
+  const [roles] = await pool.query(
+    "SELECT r.id, r.name FROM roles as r JOIN model_has_roles as mhr ON mhr.role_id = r.id WHERE mhr.user_id = ?",
+    [user_id]
+  );
+  return roles;
+};
+
 exports.checkIfUserExistsService = async (email) => {
   const [user] = await pool.query(
     `SELECT * FROM users WHERE email = '${email}'`
@@ -22,7 +30,7 @@ exports.checkIfUserExistsService = async (email) => {
 
 exports.getOwnersService = async () => {
   const [owners] = await pool.query(
-    "SELECT `users`.`name` as name FROM `users` LEFT JOIN model_has_roles ON `users`.id = model_has_roles.model_id  LEFT JOIN roles ON `model_has_roles`.role_id = roles.id WHERE role_id = 1"
+    "SELECT `users`.`name` as name FROM `users` LEFT JOIN model_has_roles ON `users`.id = model_has_roles.user_id  LEFT JOIN roles ON `model_has_roles`.role_id = roles.id WHERE role_id = 1"
   );
   return owners;
 };
