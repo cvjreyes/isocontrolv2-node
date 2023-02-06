@@ -2,7 +2,7 @@ const router = require("express").Router(),
   controller = require("./user.controller"),
   { checkAuth } = require("../../middlewares/checkAuth");
 
-router.get("/find_all", controller.findAll);
+router.get("/get_all", controller.findAll);
 
 router.get("/get_user_info", checkAuth, controller.getUserInfo);
 
