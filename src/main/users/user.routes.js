@@ -12,4 +12,8 @@ router.post("/login", controller.login);
 
 router.post("/change_password", checkAuth, controller.changePassword);
 
+router.post("/create_admin", controller.createAdmin);
+
+router.post("/create", controller.create);
+
 module.exports = router;
