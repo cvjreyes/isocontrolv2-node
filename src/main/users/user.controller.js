@@ -8,7 +8,7 @@ const {
   createUserService,
 } = require("./user.services");
 const validator = require("validator");
-const { validatePassword, checkIfEmailExists } = require("./user.validations");
+const { validatePassword, checkIfEmailsExist } = require("./user.validations");
 const { send } = require("../../helpers/send");
 const { createToken } = require("../../helpers/token");
 
@@ -103,10 +103,9 @@ exports.create = async (req, res) => {
     const validCredentials = data.every((x) => validator.isEmail(x.email));
     if (!validCredentials)
       return send(res, false, "All emails should be valid");
-    const allUsersNonexistent = data.every(
-      async (x) => await checkIfEmailExists(x.email)
-    );
-    if (allUsersNonexistent) return send(res, false, "Some user already exist");
+    const allUsersNonexistent = await checkIfEmailsExist(data);
+    if (!allUsersNonexistent)
+      return send(res, false, "Some user already exist");
     const ok = await createUserService(data);
     if (ok) return send(res, true);
     return send(res, false, "Stop inventing");

@@ -6,7 +6,14 @@ exports.validatePassword = (received, existing) => {
   return decrypted === existing;
 };
 
-exports.checkIfEmailExists = async (email) => {
-  const [user] = await pool.query("SELECT * FROM users WHERE email = ?", email);
-  return !!user[0];
+exports.checkIfEmailsExist = async (data) => {
+  let allUsersNonexistent = true;
+  for (let i = 0; i < data.length; i++) {
+    const [user] = await pool.query(
+      "SELECT * FROM users WHERE email = ?",
+      data[i].email
+    );
+    if (user[0]) allUsersNonexistent = false;
+  }
+  return allUsersNonexistent;
 };

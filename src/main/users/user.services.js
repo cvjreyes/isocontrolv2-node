@@ -48,12 +48,19 @@ exports.createAdminService = async (email, pw) => {
 };
 
 exports.createUserService = async (data) => {
-  data.forEach(async ({ email }) => {
+  data.forEach(async ({ email, roles }) => {
+    // create user
     const [res] = await pool.query(
       "INSERT INTO users (name, email) VALUES (?, ?)",
       [getName(email), email]
     );
-    console.log(res);
+    // add user and roles
+    for (let i = 0; i < roles.length; i++) {
+      await pool.query(
+        "INSERT INTO model_has_roles (role_id, user_id) VALUES (?, ?)",
+        [roles[i].id, res.insertId]
+      );
+    }
   });
   return true;
 };
