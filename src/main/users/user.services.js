@@ -72,3 +72,31 @@ exports.createUserService = async (data) => {
   });
   return true;
 };
+
+exports.updateUserService = async (data) => {
+  for (let i = 0; i < data.length; i++) {
+    const { roles } = data[i];
+    // find ids
+    const ids = [];
+    for (let j = 0; j < roles.length; j++) {
+      const [id] = await pool.query(
+        "SELECT id FROM roles WHERE name = ?",
+        roles[j].label
+      );
+      ids.push(id[0].id);
+    }
+    // delete ids
+    await pool.query(
+      "DELETE FROM model_has_roles WHERE user_id = ?",
+      data[i].id
+    );
+    // add ids
+    for (let j = 0; j < ids.length; j++) {
+      await pool.query(
+        "INSERT INTO model_has_roles (role_id, user_id) VALUES (?, ?)",
+        [ids[j], data[i].id]
+      );
+    }
+  }
+  return true;
+};
