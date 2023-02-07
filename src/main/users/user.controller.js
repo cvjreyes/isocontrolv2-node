@@ -45,9 +45,10 @@ exports.login = async (req, res) => {
     if (!user) return send(res, false, "Invalid credentials");
     const validatedPassword = validatePassword(password, user.password);
     if (!validatedPassword) return send(res, false, "Invalid credentials");
+    const roles = await getUserRolesService(user.id);
     const token = createToken(user.id);
     delete user.password;
-    return send(res, true, { ...user, token });
+    return send(res, true, { ...user, token, roles });
   } catch (err) {
     console.error(err);
     send(res, false, err);
@@ -79,7 +80,7 @@ exports.changePassword = async (req, res) => {
     const { password } = await getUserService(user_id);
     const validatedPassword = validatePassword(old_password, password);
     if (!validatedPassword) return send(res, false, "Invalid credentials");
-    const updated = await changePasswordService(new_password, user_id);
+    await changePasswordService(new_password, user_id);
     return send(res, true, "Password updated successfully!");
   } catch (err) {
     console.error(err);
