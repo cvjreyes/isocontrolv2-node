@@ -16,4 +16,6 @@ router.post("/create_admin", controller.createAdmin);
 
 router.post("/create", controller.create);
 
+router.post("/update", controller.update);
+
 module.exports = router;
