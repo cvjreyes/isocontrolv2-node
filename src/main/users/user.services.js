@@ -1,5 +1,7 @@
 const md5 = require("md5");
 const pool = require("../../../config/db");
+const { createToken } = require("../../helpers/token");
+const { insertTokenIntoDB } = require("./user.microservices");
 const { checkIfEmailExists } = require("./user.validations");
 const { getName } = require("./users.helpers");
 
@@ -98,5 +100,23 @@ exports.updateUserService = async (data) => {
       );
     }
   }
+  return true;
+};
+
+exports.generateLinkService = async (user, expiresIn) => {
+  // generate token
+  const token = createToken(user.id, expiresIn);
+  // save token into db
+  await insertTokenIntoDB(user.email, token.split(".").join("!"));
+  // create link with user id + token
+  const link = `${process.env.NODE_CLIENT_URL}/create_password/${user.id}/${token}`;
+  return link;
+};
+
+exports.savePasswordService = async (user_id, pw) => {
+  await pool.query("UPDATE users SET password = ? WHERE id = ?", [
+    md5(pw),
+    user_id,
+  ]);
   return true;
 };

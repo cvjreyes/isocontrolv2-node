@@ -18,4 +18,10 @@ router.post("/create", controller.create);
 
 router.post("/update", controller.update);
 
+router.post("/request_access", controller.requestAccess);
+
+router.post("/validate_credentials", controller.validateCredentials);
+
+router.post("/choose_password", controller.choosePassword);
+
 module.exports = router;

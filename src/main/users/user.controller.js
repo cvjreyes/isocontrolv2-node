@@ -8,11 +8,18 @@ const {
   createUserService,
   getUserRolesService,
   updateUserService,
+  generateLinkService,
+  savePasswordService,
 } = require("./user.services");
 const validator = require("validator");
-const { validatePassword, checkIfEmailsExist } = require("./user.validations");
+const {
+  validatePassword,
+  checkIfEmailsExist,
+  validateToken,
+} = require("./user.validations");
 const { send } = require("../../helpers/send");
 const { createToken } = require("../../helpers/token");
+const { sendEmail } = require("../emails/emails");
 
 exports.findAll = async (req, res) => {
   try {
@@ -128,6 +135,56 @@ exports.update = async (req, res) => {
   try {
     await updateUserService(data);
     send(res, true, `User${data.length > 1 ? "s" : ""} updated successfully!`);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.requestAccess = async (req, res) => {
+  const { email } = req.body;
+  try {
+    // check email
+    const user = await checkIfUserExistsService(email);
+    if (!user)
+      return send(res, false, "Ask your manager to create your user first");
+    // generate token + link
+    const link = await generateLinkService(user, "1h");
+    // send email
+    const ok = await sendEmail(
+      email,
+      "IsoControl: Request access",
+      "request",
+      link
+    );
+    if (!ok) return send(res, false, "Something went wrong");
+    return send(res, true, "Email sent successfully");
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.validateCredentials = async (req, res) => {
+  const { user_id, token } = req.body;
+  try {
+    const user = await getUserService(user_id);
+    if (!user) return send(res, false, "Link invalid");
+    const validated = await validateToken(token);
+    return send(res, validated);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.choosePassword = async (req, res) => {
+  const { password, passwordConfirm, user_id } = req.body;
+  try {
+    if (password !== passwordConfirm)
+      return send(res, false, "Passwords should match");
+    await savePasswordService(user_id, password);
+    return send(res, true, "Password saved successfully!");
   } catch (err) {
     console.error(err);
     send(res, false, err);

@@ -31,6 +31,8 @@
     "md5": "^2.3.0",
     "mysql2": "^2.3.3",
     "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.1",
+    "nodemailer-express-handlebars": "^6.0.0",
     "validator": "^13.7.0"
   }
 }

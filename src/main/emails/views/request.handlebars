@@ -1,0 +1,50 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request Access Email</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; } body { width: 100vw;
+      margin: 2rem auto; padding: 2rem; } p { font-size: 16px; font-weight: 300;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Hello, {{name}}</p>
+    <p>You requested access to IsoControl</p>
+    <p>Click the link to generate your password.</p>
+    <p>{{link}}</p>
+    <p>Technip Energies</p>
+    <img
+      style="margin: 0.5rem; display: inline; width: 50px; height: 50px"
+      alt="product"
+      src="cid:technip"
+    />
+    {{!-- {{#if shipped}} Arrives on or before {{eta}} days {{else}}
+      Available from store right now
+    {{/if}}
+    {{#each productsBought}}
+      <div style="display: flex; margin-top: 0.5rem">
+        <img
+          style="margin: 0.5rem; display: inline; width: 50px; height: 50px"
+          alt="product"
+          src={{this.url}}
+        />
+        <div style="display: inline; margin-left: 0.5rem">
+          <p style="font-weight: 400; font-size: 0.9rem">{{this.name}}</p>
+          <p class="light">Color:
+            {{this.color}}</p>
+          <p class="light">QTY:
+            {{this.amount}}
+            metres @ £{{this.price}}
+            per metre</p>
+          {{#if this.discount}}
+            <p class="light">Discount: {{this.discount}}%</p>
+          {{/if}}
+          <p class="light">£{{this.total}}</p>
+        </div>
+      </div>
+    {{/each}} --}}
+  </body>
+</html>
