@@ -105,9 +105,9 @@ exports.updateUserService = async (data) => {
 
 exports.generateLinkService = async (user, expiresIn) => {
   // generate token
-  const token = createToken(user.id, expiresIn);
+  const token = createToken(user.id, expiresIn).split(".").join("!");
   // save token into db
-  await insertTokenIntoDB(user.email, token.split(".").join("!"));
+  await insertTokenIntoDB(user.email, token);
   // create link with user id + token
   const link = `${process.env.NODE_CLIENT_URL}/create_password/${user.id}/${token}`;
   return link;
