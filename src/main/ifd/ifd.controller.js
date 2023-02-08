@@ -12,6 +12,7 @@ const {
   previousStepService,
   changeActionsService,
   restoreIFDPipesService,
+  getIFDProgressService,
 } = require("./ifd.services.js");
 const { progressNumbers } = require("../../helpers/progressNumbers");
 
@@ -84,6 +85,17 @@ exports.getIFDPipesFromTray = async (req, res) => {
   try {
     const pipes = await getPipesFromTrayService(status);
     send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getIFDProgress = async (req, res) => {
+  //Get del progreso del feed para montar la grafica
+  try {
+    const IFDProgress = await getIFDProgressService();
+    return send(res, true, IFDProgress);
   } catch (err) {
     console.error(err);
     return send(res, false, err);

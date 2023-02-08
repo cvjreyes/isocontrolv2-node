@@ -14,6 +14,8 @@ router.get(
   controller.getIFDPipesFromTray
 );
 
+router.get("/get_ifd_progress", checkAuth, controller.getIFDProgress);
+
 router.post("/claim_ifd_pipes", checkAuth, controller.claimIFDPipes);
 
 router.post("/unclaim_ifd_pipes", checkAuth, controller.unclaimIFDPipes);

@@ -50,6 +50,13 @@ exports.getPipesFromTrayService = async (status) => {
   return rowsEnd;
 };
 
+exports.getIFDProgressService = async () => {
+  const [pipes] = await pool.query(
+    "SELECT ifd_progress.*, ifd_forecast.estimated, ifd_forecast.forecast FROM ifd_progress JOIN ifd_forecast ON ifd_progress.id = ifd_forecast.`week`"
+  );
+  return pipes;
+};
+
 exports.updateIFDPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
