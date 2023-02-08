@@ -7,6 +7,7 @@ const {
   createAdminService,
   createUserService,
   getUserRolesService,
+  updateUserService,
 } = require("./user.services");
 const validator = require("validator");
 const { validatePassword, checkIfEmailsExist } = require("./user.validations");
@@ -16,6 +17,10 @@ const { createToken } = require("../../helpers/token");
 exports.findAll = async (req, res) => {
   try {
     const users = await findAllUsersService();
+    for (let i = 0; i < users.length; i++) {
+      const tempRoles = await getUserRolesService(users[i].id);
+      users[i].roles = tempRoles.map((x) => ({ label: x.name, value: x.name }));
+    }
     return send(res, true, users);
   } catch (err) {
     console.error(err);
@@ -112,6 +117,17 @@ exports.create = async (req, res) => {
     const ok = await createUserService(data);
     if (ok) return send(res, true);
     return send(res, false, "Stop inventing");
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.update = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await updateUserService(data);
+    send(res, true, `User${data.length > 1 ? "s" : ""} updated successfully!`);
   } catch (err) {
     console.error(err);
     send(res, false, err);
