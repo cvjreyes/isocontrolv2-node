@@ -50,6 +50,20 @@ exports.getPipesFromTrayService = async (status) => {
   return rowsEnd;
 };
 
+exports.getIFDProgressService = async () => {
+  const [pipes] = await pool.query(
+    "SELECT ifd_progress.*, ifd_forecast.estimated, ifd_forecast.forecast FROM ifd_progress JOIN ifd_forecast ON ifd_progress.id = ifd_forecast.`week`"
+  );
+  return pipes;
+};
+
+exports.getIFDForecastService = async () => {
+  const [pipes] = await pool.query(
+    "SELECT * FROM ifd_forecast ORDER BY week DESC"
+  );
+  return pipes;
+};
+
 exports.updateIFDPipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
@@ -180,4 +194,20 @@ exports.claimIFDPipesService = async (data, user_id) => {
     if (ok) return true;
     throw new Error("Something went wrong claiming ifd pipes");
   });
+};
+
+exports.addIFDForecastService = async (data) => {
+  try {
+    data.forEach(async (item) => {
+      await pool.query("CALL add_ifd_forecast (?, ?, ?)", [
+        item.week,
+        item.estimated,
+        item.forecast,
+      ]);
+    });
+    return true;
+  } catch (err) {
+    console.error(err);
+    throw new Error("Something went wrong updating ifd pipes");
+  }
 };

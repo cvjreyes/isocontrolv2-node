@@ -105,18 +105,18 @@ const saveFeedWeight = async () => {
 };
 
 const cronFn = () => {
-  // cron.schedule("*/5 * * * *", () => {
-  //   getModelledFrom3D();
-  // });
-  // cron.schedule("*/10 * * * *", () => {
-  //   updateLines();
-  // });
-  // cron.schedule("*/10 * * * *", () => {
-  //   exportModelledPipes();
-  // });
-  // cron.schedule("0 1 * * 5", async () => {
-  //   saveFeedWeight();
-  // });
+  cron.schedule("*/10 * * * *", () => {
+    getModelledFrom3D();
+  });
+  cron.schedule("*/10 * * * *", () => {
+    updateLines();
+  });
+  cron.schedule("*/10 * * * *", () => {
+    exportModelledPipes();
+  });
+  cron.schedule("0 1 * * 5", async () => {
+    saveFeedWeight();
+  });
 };
 
 module.exports = () => {

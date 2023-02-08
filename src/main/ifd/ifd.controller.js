@@ -12,6 +12,9 @@ const {
   previousStepService,
   changeActionsService,
   restoreIFDPipesService,
+  getIFDProgressService,
+  getIFDForecastService,
+  addIFDForecastService,
 } = require("./ifd.services.js");
 const { progressNumbers } = require("../../helpers/progressNumbers");
 
@@ -84,6 +87,28 @@ exports.getIFDPipesFromTray = async (req, res) => {
   try {
     const pipes = await getPipesFromTrayService(status);
     send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getIFDProgress = async (req, res) => {
+  //Get del progreso del feed para montar la grafica
+  try {
+    const IFDProgress = await getIFDProgressService();
+    return send(res, true, IFDProgress);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getIFDForecast = async (req, res) => {
+  //Get del forecast del feed
+  try {
+    const ifdForecast = await getIFDForecastService();
+    return send(res, true, ifdForecast);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
@@ -177,6 +202,17 @@ exports.deletePipe = async (req, res) => {
   try {
     const del = await deletePipe(id);
     send(res, true, del);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.submitIFDForecast = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await addIFDForecastService(data);
+    send(res, true);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
