@@ -16,6 +16,8 @@ router.get(
 
 router.get("/get_ifd_progress", checkAuth, controller.getIFDProgress);
 
+router.get("/get_ifd_forecast", checkAuth, controller.getIFDForecast);
+
 router.post("/claim_ifd_pipes", checkAuth, controller.claimIFDPipes);
 
 router.post("/unclaim_ifd_pipes", checkAuth, controller.unclaimIFDPipes);
@@ -31,6 +33,8 @@ router.post("/return", checkAuth, controller.previousStep);
 router.post("/change_actions", checkAuth, controller.changeActions);
 
 router.post("/restore_ifd_pipes", checkAuth, controller.restoreIFDPipes);
+
+router.post("/submit_ifd_forecast", checkAuth, controller.submitIFDForecast);
 
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
