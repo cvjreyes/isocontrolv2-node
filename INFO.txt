@@ -6,9 +6,12 @@ BBDD USADAS
 - ifd_pipes
 - feed_forecast
 - gfeed
-- model_has_roles ? re-check
-- roles ? re-check
+- model_has_roles
+- roles 
 
 VIEW USADAS
 -  feed_pipes_view
 -  ifd_pipes_view
+
+FUNCIONES
+- add_feed_forecast

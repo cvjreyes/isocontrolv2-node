@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const md5 = require("md5");
 const pool = require("../../../config/db");
 
@@ -16,4 +17,18 @@ exports.checkIfEmailsExist = async (data) => {
     if (user[0]) allUsersNonexistent = false;
   }
   return allUsersNonexistent;
+};
+
+exports.validateToken = async (token) => {
+  const [result] = await pool.query(
+    "SELECT * FROM users WHERE token = ?",
+    token
+  );
+  if (!result[0]) return false;
+  let verifyToken = token.split("!").join(".");
+  const test = jwt.verify(verifyToken, process.env.NODE_TOKEN_SECRET, (err) => {
+    if (err) return false;
+    return true;
+  });
+  return test;
 };
