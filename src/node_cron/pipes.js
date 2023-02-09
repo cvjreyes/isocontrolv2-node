@@ -95,7 +95,7 @@ const saveFeedWeight = async () => {
       }
     }
     const [res] = await pool.query(
-      "INSERT INTO gfeed(progress, max_progress) VALUES(?,?)",
+      "INSERT INTO feed_progress(progress, max_progress) VALUES(?,?)",
       [progress, max_progress]
     );
   } catch (err) {

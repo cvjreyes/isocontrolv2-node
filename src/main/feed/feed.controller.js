@@ -47,8 +47,8 @@ exports.getFeedForecast = async (req, res) => {
 exports.getFeedProgress = async (req, res) => {
   //Get del progreso del feed para montar la grafica
   try {
-    const GFeed = await getFeedProgressService();
-    return send(res, true, GFeed);
+    const FeedProgress = await getFeedProgressService();
+    return send(res, true, FeedProgress);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
