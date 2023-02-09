@@ -149,7 +149,7 @@ exports.requestAccess = async (req, res) => {
     if (!user)
       return send(res, false, "Ask your manager to create your user first");
     // generate token + link
-    const link = await generateLinkService(user, "1h");
+    const link = await generateLinkService(user, "create_password", "1h");
     // send email
     const ok = await sendEmail(
       email,
@@ -185,6 +185,29 @@ exports.choosePassword = async (req, res) => {
       return send(res, false, "Passwords should match");
     await savePasswordService(user_id, password);
     return send(res, true, "Password saved successfully!");
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    // check email
+    const user = await checkIfUserExistsService(email);
+    if (!user) return send(res, false, "This email doesn't exist");
+    // generate token + link
+    const link = await generateLinkService(user, "reset_password", "1h");
+    // send email
+    const ok = await sendEmail(
+      email,
+      "IsoControl: Reset password",
+      "reset",
+      link
+    );
+    if (!ok) return send(res, false, "Something went wrong");
+    return send(res, true, "Email sent successfully");
   } catch (err) {
     console.error(err);
     send(res, false, err);

@@ -1,10 +1,9 @@
-const cron = require("node-cron");
 const csv = require("csvtojson");
 
 const pool = require("../../config/db");
 const { buildRow, writeFile } = require("./pipes.helper");
 
-const getModelledFrom3D = async () => {
+exports.getModelledFrom3D = async () => {
   try {
     const results = await csv().fromFile(process.env.NODE_DPIPES_ROUTE);
     for (let i = 0; i < results.length; i++) {
@@ -33,7 +32,7 @@ const getModelledFrom3D = async () => {
   }
 };
 
-const updateLines = async () => {
+exports.updateLines = async () => {
   try {
     const results = await csv().fromFile(process.env.NODE_LINES_ROUTE);
     await pool.query("TRUNCATE TABLE `lines`");
@@ -62,7 +61,7 @@ const updateLines = async () => {
   }
 };
 
-const exportModelledPipes = async () => {
+exports.exportModelledPipes = async () => {
   try {
     // prepare data
     const [pipes] = await pool.query("SELECT * FROM ifd_pipes_view");
@@ -80,7 +79,7 @@ const exportModelledPipes = async () => {
   }
 };
 
-const saveFeedWeight = async () => {
+exports.saveFeedWeight = async () => {
   try {
     const [results] = await pool.query("SELECT status FROM feed_pipes");
     let max_progress = results.length * 100;
@@ -94,7 +93,7 @@ const saveFeedWeight = async () => {
         progress += 100;
       }
     }
-    const [res] = await pool.query(
+    await pool.query(
       "INSERT INTO feed_progress(progress, max_progress) VALUES(?,?)",
       [progress, max_progress]
     );
@@ -102,23 +101,4 @@ const saveFeedWeight = async () => {
     console.error(err);
     throw err;
   }
-};
-
-const cronFn = () => {
-  cron.schedule("*/10 * * * *", () => {
-    getModelledFrom3D();
-  });
-  cron.schedule("*/10 * * * *", () => {
-    updateLines();
-  });
-  cron.schedule("*/10 * * * *", () => {
-    exportModelledPipes();
-  });
-  cron.schedule("0 1 * * 5", async () => {
-    saveFeedWeight();
-  });
-};
-
-module.exports = () => {
-  cronFn();
 };

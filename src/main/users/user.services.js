@@ -103,13 +103,13 @@ exports.updateUserService = async (data) => {
   return true;
 };
 
-exports.generateLinkService = async (user, expiresIn) => {
+exports.generateLinkService = async (user, page, expiresIn) => {
   // generate token
   const token = createToken(user.id, expiresIn).split(".").join("!");
   // save token into db
   await insertTokenIntoDB(user.email, token);
   // create link with user id + token
-  const link = `${process.env.NODE_CLIENT_URL}/create_password/${user.id}/${token}`;
+  const link = `${process.env.NODE_CLIENT_URL}/${page}/${user.id}/${token}`;
   return link;
 };
 
