@@ -37,7 +37,7 @@ app.use("/roles", require("./src/main/roles/roles.routes"));
 app.use("/navis", require("./src/main/navis/navis.routes"));
 
 // NODE-CRON
-require("./src/node_cron/pipes")();
+require("./src/node_cron/cron")();
 
 // 404 HANDLING
 app.use("*", (req, res) => {

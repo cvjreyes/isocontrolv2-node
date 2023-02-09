@@ -24,4 +24,6 @@ router.post("/validate_credentials", controller.validateCredentials);
 
 router.post("/choose_password", controller.choosePassword);
 
+router.post("/forgot_password", controller.forgotPassword);
+
 module.exports = router;

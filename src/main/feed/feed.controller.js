@@ -11,6 +11,7 @@ const {
   deleteForecastService,
   getFeedProgressService,
 } = require("./feed.services");
+const { saveFeedWeight } = require("../../node_cron/pipes");
 
 exports.getProgress = async (req, res) => {
   try {
@@ -59,7 +60,6 @@ exports.submitFeedPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await updateFeedPipesService(data);
-    // if status is modelled => añadir a ifd_pipes
     send(res, true);
   } catch (err) {
     console.error(err);
@@ -95,8 +95,11 @@ exports.addPipes = async (req, res) => {
     data.forEach(async (pipe, i) => {
       await addFeedPipesService(pipe, i);
     });
+    setTimeout(() => {
+      saveFeedWeight();
+    }, 1000);
     send(res, true);
-  } catch (er) {
+  } catch (err) {
     console.error(err);
     return send(res, false, err);
   }
