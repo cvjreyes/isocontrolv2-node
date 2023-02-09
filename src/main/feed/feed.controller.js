@@ -7,9 +7,9 @@ const {
   deletePipe,
   addFeedPipesService,
   getFeedForecastService,
-  getGFeedService,
   addForecastService,
   deleteForecastService,
+  getFeedProgressService,
 } = require("./feed.services");
 
 exports.getProgress = async (req, res) => {
@@ -44,11 +44,11 @@ exports.getFeedForecast = async (req, res) => {
   }
 };
 
-exports.getGFeed = async (req, res) => {
+exports.getFeedProgress = async (req, res) => {
   //Get del progreso del feed para montar la grafica
   try {
-    const GFeed = await getGFeedService();
-    return send(res, true, GFeed);
+    const FeedProgress = await getFeedProgressService();
+    return send(res, true, FeedProgress);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
