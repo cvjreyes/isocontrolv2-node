@@ -23,7 +23,7 @@ exports.getProgress = async (req, res) => {
   }
 };
 
-exports.getFeedPipes = async (req, res) => {
+exports.getAllPipes = async (req, res) => {
   try {
     const resRows = await getFeedPipesService();
     const rows = fillType(resRows);
@@ -34,7 +34,7 @@ exports.getFeedPipes = async (req, res) => {
   }
 };
 
-exports.getFeedForecast = async (req, res) => {
+exports.getForecast = async (req, res) => {
   //Get del forecast del feed
   try {
     const feedForecast = await getFeedForecastService();
@@ -45,10 +45,10 @@ exports.getFeedForecast = async (req, res) => {
   }
 };
 
-exports.getFeedProgress = async (req, res) => {
+exports.getProgressData = async (req, res) => {
   //Get del progreso del feed para montar la grafica
   try {
-    const FeedProgress = await getFeedProgressService();
+    const FeedProgress = await getProgressDataService();
     return send(res, true, FeedProgress);
   } catch (err) {
     console.error(err);
@@ -56,7 +56,7 @@ exports.getFeedProgress = async (req, res) => {
   }
 };
 
-exports.submitFeedPipes = async (req, res) => {
+exports.submitPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await updateFeedPipesService(data);

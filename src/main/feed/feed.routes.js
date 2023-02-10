@@ -4,13 +4,13 @@ const router = require("express").Router(),
 
 router.get("/get_progress", checkAuth, controller.getProgress);
 
-router.get("/get_feed_pipes", checkAuth, controller.getFeedPipes);
+router.get("/get_all_pipes", checkAuth, controller.getAllPipes);
 
-router.get("/get_forecast", checkAuth, controller.getFeedForecast);
+router.get("/get_forecast", checkAuth, controller.getForecast);
 
-router.get("/get_feed_progress", checkAuth, controller.getFeedProgress);
+router.get("/get_progress_data", checkAuth, controller.getProgressData);
 
-router.post("/submit_feed_pipes", checkAuth, controller.submitFeedPipes);
+router.post("/submit_pipes", checkAuth, controller.submitPipes);
 
 router.post("/add_pipes", checkAuth, controller.addPipes);
 
