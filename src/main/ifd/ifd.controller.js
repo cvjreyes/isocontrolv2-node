@@ -3,18 +3,18 @@ const { send } = require("../../helpers/send");
 const {
   deletePipe,
   getPipesService,
-  updateIFDPipesService,
-  addIFDPipesService,
+  updatePipesService,
+  addPipesService,
   getPipesFromTrayService,
-  claimIFDPipesService,
+  claimPipesService,
   getMyPipesService,
   nextStepService,
   previousStepService,
   changeActionsService,
-  restoreIFDPipesService,
-  getIFDProgressService,
-  getIFDForecastService,
-  addIFDForecastService,
+  restorePipesService,
+  getProgressService,
+  getForecastService,
+  addForecastService,
 } = require("./ifd.services.js");
 const { progressNumbers } = require("../../helpers/progressNumbers");
 
@@ -60,7 +60,7 @@ exports.getProgress = async (req, res) => {
   }
 };
 
-exports.getIFDPipes = async (req, res) => {
+exports.getPipes = async (req, res) => {
   const { trashed } = req.params;
   try {
     const pipes = await getPipesService(trashed);
@@ -82,7 +82,7 @@ exports.getMyPipes = async (req, res) => {
   }
 };
 
-exports.getIFDPipesFromTray = async (req, res) => {
+exports.getPipesFromTray = async (req, res) => {
   const { status } = req.params;
   try {
     const pipes = await getPipesFromTrayService(status);
@@ -93,10 +93,10 @@ exports.getIFDPipesFromTray = async (req, res) => {
   }
 };
 
-exports.getIFDProgress = async (req, res) => {
+exports.getProgress = async (req, res) => {
   //Get del progreso del feed para montar la grafica
   try {
-    const IFDProgress = await getIFDProgressService();
+    const IFDProgress = await getProgressService();
     return send(res, true, IFDProgress);
   } catch (err) {
     console.error(err);
@@ -104,10 +104,10 @@ exports.getIFDProgress = async (req, res) => {
   }
 };
 
-exports.getIFDForecast = async (req, res) => {
+exports.getForecast = async (req, res) => {
   //Get del forecast del feed
   try {
-    const ifdForecast = await getIFDForecastService();
+    const ifdForecast = await getForecastService();
     return send(res, true, ifdForecast);
   } catch (err) {
     console.error(err);
@@ -115,24 +115,11 @@ exports.getIFDForecast = async (req, res) => {
   }
 };
 
-exports.submitIFDPipes = async (req, res) => {
-  const { data } = req.body;
-  try {
-    await updateIFDPipesService(data);
-    // if status is modelled => añadir a ifd_pipes
-    send(res, true);
-    // this.getFeedPipes(req, res);
-  } catch (err) {
-    console.error(err);
-    return send(res, false, err);
-  }
-};
-
-exports.claimIFDPipes = async (req, res) => {
+exports.claimPipes = async (req, res) => {
   const { data } = req.body;
   const user_id = req.user_id;
   try {
-    await claimIFDPipesService(data, user_id);
+    await claimPipesService(data, user_id);
     send(res, true);
   } catch (err) {
     console.error(err);
@@ -140,11 +127,24 @@ exports.claimIFDPipes = async (req, res) => {
   }
 };
 
-exports.unclaimIFDPipes = async (req, res) => {
+exports.unclaimPipes = async (req, res) => {
   const { data } = req.body;
   try {
-    await claimIFDPipesService(data, null);
+    await claimPipesService(data, null);
     send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.submitPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await updatePipesService(data);
+    // if status is modelled => añadir a ifd_pipes
+    send(res, true);
+    // this.getFeedPipes(req, res);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
@@ -155,7 +155,7 @@ exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await data.forEach(async (pipe, i) => {
-      await addIFDPipesService(pipe, i);
+      await addPipesService(pipe, i);
     });
     send(res, true);
   } catch (er) {
@@ -197,33 +197,33 @@ exports.changeActions = async (req, res) => {
   }
 };
 
+exports.restorePipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await restorePipesService(data);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.submitForecast = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await addForecastService(data);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
 exports.deletePipe = async (req, res) => {
   const { id } = req.params;
   try {
     const del = await deletePipe(id);
     send(res, true, del);
-  } catch (err) {
-    console.error(err);
-    return send(res, false, err);
-  }
-};
-
-exports.submitIFDForecast = async (req, res) => {
-  const { data } = req.body;
-  try {
-    await addIFDForecastService(data);
-    send(res, true);
-  } catch (err) {
-    console.error(err);
-    return send(res, false, err);
-  }
-};
-
-exports.restoreIFDPipes = async (req, res) => {
-  const { data } = req.body;
-  try {
-    await restoreIFDPipesService(data);
-    send(res, true);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
