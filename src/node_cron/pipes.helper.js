@@ -1,4 +1,5 @@
 const fs = require("fs/promises");
+const { IFDWeight, progressNumbers } = require("../helpers/progressNumbers");
 
 exports.buildRow = (pipe) => {
   return `New :Cpipes /${buildTag(pipe)} :DiametersRefFromCpipes '${
@@ -28,4 +29,18 @@ exports.writeFile = async (data, fileName) => {
     console.error(err);
     throw err;
   }
+};
+
+exports.fillIFDWeight = (data) => {
+  for (let i = 0; i < data.length; i++) {
+    data[i].totalWeight = IFDWeight[data[i].type];
+    const tempStatus = data[i].status
+      .replace("-", "")
+      .replace("*", "")
+      .toLowerCase();
+    data[i].weightPercentage = progressNumbers[data[i].type][tempStatus];
+    data[i].currentWeight =
+      (data[i].totalWeight * data[i].weightPercentage) / 100 || 0;
+  }
+  return data;
 };

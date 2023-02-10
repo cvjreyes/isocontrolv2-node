@@ -95,9 +95,9 @@ exports.addPipes = async (req, res) => {
     data.forEach(async (pipe, i) => {
       await addFeedPipesService(pipe, i);
     });
-    setTimeout(() => {
-      saveFeedWeight();
-    }, 1000);
+    // setTimeout(() => {
+    //   saveFeedWeight();
+    // }, 1000);
     send(res, true);
   } catch (err) {
     console.error(err);

@@ -3,7 +3,8 @@ const {
   getModelledFrom3D,
   updateLines,
   exportModelledPipes,
-  saveFeedWeight,
+  saveFEEDWeight,
+  saveIFDWeight,
 } = require("./pipes");
 
 const cronFn = () => {
@@ -17,7 +18,8 @@ const cronFn = () => {
     exportModelledPipes();
   });
   cron.schedule("0 1 * * 5", () => {
-    saveFeedWeight();
+    saveFEEDWeight();
+    saveIFDWeight();
   });
 };
 
