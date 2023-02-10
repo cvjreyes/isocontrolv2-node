@@ -52,7 +52,7 @@ exports.getPipesFromTrayService = async (status) => {
 
 exports.getIFDProgressService = async () => {
   const [pipes] = await pool.query(
-    "SELECT ifd_progress.*, ifd_forecast.estimated, ifd_forecast.forecast FROM ifd_progress JOIN ifd_forecast ON ifd_progress.id = ifd_forecast.`week`"
+    "SELECT ifd_progress.*, ifd_forecast.estimated, ifd_forecast.forecast FROM ifd_progress JOIN ifd_forecast ON ifd_progress.id = ifd_forecast.`week` ORDER BY id ASC"
   );
   return pipes;
 };
