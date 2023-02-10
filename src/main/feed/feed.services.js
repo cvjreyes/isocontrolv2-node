@@ -39,7 +39,7 @@ exports.getFeedForecastService = async () => {
   return pipes;
 };
 
-exports.getFeedProgressService = async () => {
+exports.getProgressDataService = async () => {
   const [pipes] = await pool.query(
     "SELECT feed_progress.*, feed_forecast.estimated, feed_forecast.forecast FROM feed_progress JOIN feed_forecast ON feed_progress.id = feed_forecast.`week` ORDER BY id ASC"
   );
