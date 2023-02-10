@@ -48,3 +48,9 @@ exports.formatStatus = (status) => {
     status.charAt(0) + status.slice(1).toLowerCase().replace("_", " ")
   );
 };
+
+exports.IFDWeight = {
+  TL1: 6,
+  TL2: 10,
+  TL3: 20,
+};

@@ -1,7 +1,8 @@
 const csv = require("csvtojson");
 
 const pool = require("../../config/db");
-const { buildRow, writeFile } = require("./pipes.helper");
+const { fillType } = require("../helpers/pipes");
+const { buildRow, writeFile, fillIFDWeight } = require("./pipes.helper");
 
 exports.getModelledFrom3D = async () => {
   try {
@@ -79,7 +80,7 @@ exports.exportModelledPipes = async () => {
   }
 };
 
-exports.saveFeedWeight = async () => {
+exports.saveFEEDWeight = async () => {
   try {
     const [results] = await pool.query("SELECT status FROM feed_pipes");
     let max_progress = results.length * 100;
@@ -95,6 +96,29 @@ exports.saveFeedWeight = async () => {
     }
     await pool.query(
       "INSERT INTO feed_progress(progress, max_progress) VALUES(?,?)",
+      [progress, max_progress]
+    );
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+exports.saveIFDWeight = async () => {
+  try {
+    const [results] = await pool.query(
+      "SELECT calc_notes, diameter, status FROM ifd_pipes_view"
+    );
+    const data = fillType(results);
+    const data2 = fillIFDWeight(data);
+    let max_progress = 0;
+    let progress = 0;
+    for (let i = 0; i < data2.length; i++) {
+      max_progress += data2[i].totalWeight;
+      progress += data2[i].currentWeight;
+    }
+    await pool.query(
+      "INSERT INTO ifd_progress(progress, max_progress) VALUES(?,?)",
       [progress, max_progress]
     );
   } catch (err) {
