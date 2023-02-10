@@ -4,19 +4,19 @@ const router = require("express").Router(),
 
 router.get("/get_progress", checkAuth, controller.getProgress);
 
-router.get("/get_ifd_pipes/:trashed", checkAuth, controller.getIFDPipes);
+router.get("/get_some_pipes/:trashed", checkAuth, controller.getIFDPipes);
 
 router.get("/get_my_pipes", checkAuth, controller.getMyPipes);
 
 router.get(
-  "/get_ifd_pipes_from_tray/:status",
+  "/get_pipes_from_tray/:status",
   checkAuth,
   controller.getIFDPipesFromTray
 );
 
-router.get("/get_ifd_progress", checkAuth, controller.getIFDProgress);
+router.get("/get_progress_data", checkAuth, controller.getIFDProgress);
 
-router.get("/get_ifd_forecast", checkAuth, controller.getIFDForecast);
+router.get("/get_forecast", checkAuth, controller.getIFDForecast);
 
 router.post("/claim_ifd_pipes", checkAuth, controller.claimIFDPipes);
 
