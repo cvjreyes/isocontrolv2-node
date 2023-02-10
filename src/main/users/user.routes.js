@@ -2,49 +2,28 @@ const router = require("express").Router(),
   controller = require("./user.controller"),
   { checkAuth } = require("../../middlewares/checkAuth");
 
-router.get("/find_all", controller.findAll);
+router.get("/get_all", controller.findAll);
 
 router.get("/get_user_info", checkAuth, controller.getUserInfo);
 
+router.get("/get_owners", checkAuth, controller.getOwners);
+
 router.post("/login", controller.login);
 
-// router.post("/api/user/getPassword", users.getPassword);
+router.post("/change_password", checkAuth, controller.changePassword);
 
-// router.post("/user/changePassword", users.changePassword);
+router.post("/create_admin", controller.createAdmin);
 
-// // Retrieve a single user with email
-// router.get("/api/userEmail/:userEmail", users.findOneByEmail);
+router.post("/create", controller.create);
 
-// router.get("/api/users/:tab", users.getUsersByTab);
+router.post("/update", controller.update);
 
-// // Retrieve a single user with username
-// router.post("/api/findByEmail", users.findOneByUsername);
+router.post("/request_access", controller.requestAccess);
 
-// // Update a user with userId
-// router.put("/api/user/:userId", users.update);
+router.post("/validate_credentials", controller.validateCredentials);
 
-// // Delete a user with userId
-// router.delete("/api/user/:userId", users.delete);
+router.post("/choose_password", controller.choosePassword);
 
-// // Create a new user
-// router.delete("/api/users", users.deleteAll);
-
-// router.post("/createUser", users.createUser);
-
-// router.get("/usersWithRoles", users.usersWithRoles);
-
-// router.post("/users/manageRoles", users.manageRoles);
-
-// router.get("/downloadUsers", users.downloadUsers);
-
-// router.get("/notifications/:email", users.notifications);
-
-// router.post("/markAllNotificationsAsRead", users.markAllNotificationsAsRead);
-
-// router.post("/markNotificationAsRead", users.markNotificationAsRead);
-
-// router.post("/markNotificationAsUnread", users.markNotificationAsUnread);
-
-// router.post("/deleteNotification", users.deleteNotification);
+router.post("/forgot_password", controller.forgotPassword);
 
 module.exports = router;

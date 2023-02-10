@@ -1,11 +1,17 @@
+const { fillType } = require("../../helpers/pipes");
 const { send } = require("../../helpers/send");
-const { fillType } = require("./feed.microservices");
 const {
   getFeedPipesService,
   updateFeedPipesService,
   getProgressService,
   deletePipe,
+  addFeedPipesService,
+  getFeedForecastService,
+  addForecastService,
+  deleteForecastService,
+  getFeedProgressService,
 } = require("./feed.services");
+const { saveFeedWeight } = require("../../node_cron/pipes");
 
 exports.getProgress = async (req, res) => {
   try {
@@ -28,13 +34,44 @@ exports.getFeedPipes = async (req, res) => {
   }
 };
 
+exports.getFeedForecast = async (req, res) => {
+  //Get del forecast del feed
+  try {
+    const feedForecast = await getFeedForecastService();
+    return send(res, true, feedForecast);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getFeedProgress = async (req, res) => {
+  //Get del progreso del feed para montar la grafica
+  try {
+    const FeedProgress = await getFeedProgressService();
+    return send(res, true, FeedProgress);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
 exports.submitFeedPipes = async (req, res) => {
   const { data } = req.body;
   try {
-    const rows = fillType(data);
-    await updateFeedPipesService(rows);
+    await updateFeedPipesService(data);
     send(res, true);
-    // this.getFeedPipes(req, res);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.submitForecast = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await addForecastService(data);
+    send(res, true);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
@@ -45,8 +82,34 @@ exports.deletePipe = async (req, res) => {
   const { id } = req.params;
   try {
     const del = await deletePipe(id);
-    // await updateFeedPipesService(rows);
     send(res, true, del);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.addPipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    data.forEach(async (pipe, i) => {
+      await addFeedPipesService(pipe, i);
+    });
+    // setTimeout(() => {
+    //   saveFeedWeight();
+    // }, 1000);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.deleteForecast = async (req, res) => {
+  const { week } = req.params;
+  try {
+    await deleteForecastService(week);
+    return send(res, true);
   } catch (err) {
     console.error(err);
     return send(res, false, err);

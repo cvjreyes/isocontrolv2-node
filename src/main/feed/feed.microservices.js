@@ -1,34 +1,22 @@
 const pool = require("../../../config/db");
 
-exports.fillType = (data) => {
-  for (let i = 0; i < data.length; i++) {
-    if (data[i].calc_notes === "NA" || data[i].calc_notes === "unset") {
-      if (process.env.NODE_MMDN == "0") {
-        if (data[i].diameter < 2.0) data[i].type = "TL1";
-        else data[i].type = "TL2";
-      } else {
-        if (data[i].diameter < 50) data[i].type = "TL1";
-        else data[i].type = "TL2";
-      }
-    } else data[i].type = "TL3";
-  }
-  return data;
+exports.addPipeToIFD = async (pipe, area_id, line_refno) => {
+  const [res] = await pool.query(
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
+    [line_refno, pipe.id, area_id, pipe.train, "FEED_ESTIMATED"]
+  );
+  return res;
 };
 
-exports.getAreaId = async (area) => {
-  const [area_id] = await pool.query(
-    "SELECT id FROM areas WHERE name = ?",
-    area.trim()
-  );
-  if (!area_id[0].id) throw new Error("Area ID is incorrect");
-  return area_id[0].id;
+exports.removePipeFromIFD = async (id) => {
+  const [res] = await pool.query("DELETE FROM ifd_pipes WHERE feed_id = ?", id);
+  return res;
 };
 
-exports.getLineRefno = async (line_ref) => {
-  const [refno] = await pool.query(
-    "SELECT refno FROM `lines` WHERE tag = ?",
-    line_ref.trim()
+exports.updatePipeInIFD = async (pipe, area_id) => {
+  const [res] = await pool.query(
+    "UPDATE ifd_pipes SET line_refno = ?, area_id = ?, train = ? WHERE feed_id = ?",
+    [pipe.line_refno, area_id, pipe.train, pipe.id]
   );
-  if (!refno[0].refno) throw new Error("Line reference is incorrect");
-  return refno[0].refno;
+  return res;
 };
