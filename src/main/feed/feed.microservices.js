@@ -1,5 +1,10 @@
 const pool = require("../../../config/db");
 
+exports.getPipeService = async (id) => {
+  const [pipe] = await pool.query("SELECT * FROM feed_pipes WHERE id = ?", id);
+  return pipe[0];
+};
+
 exports.addPipeToIFD = async (pipe, area_id, line_refno) => {
   const [res] = await pool.query(
     "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
@@ -19,4 +24,11 @@ exports.updatePipeInIFD = async (pipe, area_id) => {
     [pipe.line_refno, area_id, pipe.train, pipe.id]
   );
   return res;
+};
+
+exports.addPipeFromFeedService = async (pipe, id, area, line_refno) => {
+  await pool.query(
+    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
+    [line_refno, id, area, pipe.train, "FEED_ESTIMATED"]
+  );
 };

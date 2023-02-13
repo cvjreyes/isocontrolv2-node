@@ -11,7 +11,10 @@ const {
   calculatePreviousStep,
 } = require("../../helpers/progressNumbers");
 const { withTransaction } = require("../../helpers/withTransaction");
-const { updatePipeInFeed } = require("./ifd.microservices");
+const {
+  updatePipeInFeed,
+  addFeedPipesFromIFDService,
+} = require("./ifd.microservices");
 
 exports.getPipesService = async (trashed) => {
   const [resRows] = await pool.query(
@@ -50,21 +53,35 @@ exports.getPipesFromTrayService = async (status) => {
   return rowsEnd;
 };
 
-exports.getIFDProgressService = async () => {
+exports.getProgressService = async () => {
   const [pipes] = await pool.query(
     "SELECT ifd_progress.*, ifd_forecast.estimated, ifd_forecast.forecast FROM ifd_progress JOIN ifd_forecast ON ifd_progress.id = ifd_forecast.`week` ORDER BY id ASC"
   );
   return pipes;
 };
 
-exports.getIFDForecastService = async () => {
+exports.getForecastService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM ifd_forecast ORDER BY week DESC"
   );
   return pipes;
 };
 
-exports.updateIFDPipesService = async (data) => {
+exports.claimPipesService = async (data, user_id) => {
+  return await data.forEach(async (pipe) => {
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query("UPDATE ifd_pipes SET owner_id = ? WHERE id = ?", [
+          user_id,
+          pipe.id,
+        ])
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong claiming ifd pipes");
+  });
+};
+
+exports.updatePipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
     const owner_id = pipe.owner ? await getOwnerId(pipe.owner) : null;
@@ -89,28 +106,7 @@ exports.updateIFDPipesService = async (data) => {
   });
 };
 
-exports.deletePipe = async (id) => {
-  const [pipes] = await pool.query(
-    "UPDATE ifd_pipes SET trashed = 1, owner_id = NULL WHERE id = ?",
-    id
-  );
-  return pipes;
-};
-
-exports.restoreIFDPipesService = async (data) => {
-  return await data.forEach(async (pipe) => {
-    const { ok } = await withTransaction(
-      async () =>
-        await pool.query("UPDATE ifd_pipes SET trashed = 0 WHERE id = ?", [
-          pipe.id,
-        ])
-    );
-    if (ok) return true;
-    throw new Error("Something went wrong restoring ifd pipes");
-  });
-};
-
-exports.addIFDPipesService = async (pipe) => {
+exports.addPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   // añadir pipe en feed_pipes y coger feed_id
   const { insertId } = await addFeedPipesFromIFDService({
@@ -122,14 +118,6 @@ exports.addIFDPipesService = async (pipe) => {
   const res = await pool.query(
     "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status, owner_id) VALUES (?, ?, ?, ?, ?, ?)",
     [pipe.line_refno, insertId, area_id, pipe.train, pipe.status, owner_id]
-  );
-  return res;
-};
-
-const addFeedPipesFromIFDService = async (pipe) => {
-  const [res] = await pool.query(
-    "INSERT INTO feed_pipes (line_refno, area_id, train, status) VALUES (?, ?, ?, ?)",
-    [pipe.line_refno, pipe.area_id, pipe.train, pipe.status]
   );
   return res;
 };
@@ -182,21 +170,20 @@ exports.changeActionsService = async (data) => {
   });
 };
 
-exports.claimIFDPipesService = async (data, user_id) => {
+exports.restorePipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const { ok } = await withTransaction(
       async () =>
-        await pool.query("UPDATE ifd_pipes SET owner_id = ? WHERE id = ?", [
-          user_id,
+        await pool.query("UPDATE ifd_pipes SET trashed = 0 WHERE id = ?", [
           pipe.id,
         ])
     );
     if (ok) return true;
-    throw new Error("Something went wrong claiming ifd pipes");
+    throw new Error("Something went wrong restoring ifd pipes");
   });
 };
 
-exports.addIFDForecastService = async (data) => {
+exports.addForecastService = async (data) => {
   try {
     data.forEach(async (item) => {
       await pool.query("CALL add_ifd_forecast (?, ?, ?)", [
@@ -210,4 +197,12 @@ exports.addIFDForecastService = async (data) => {
     console.error(err);
     throw new Error("Something went wrong updating ifd pipes");
   }
+};
+
+exports.deletePipe = async (id) => {
+  const [pipes] = await pool.query(
+    "UPDATE ifd_pipes SET trashed = 1, owner_id = NULL WHERE id = ?",
+    id
+  );
+  return pipes;
 };
