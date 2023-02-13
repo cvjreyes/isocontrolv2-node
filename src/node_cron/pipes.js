@@ -2,7 +2,12 @@ const csv = require("csvtojson");
 
 const pool = require("../../config/db");
 const { fillType } = require("../helpers/pipes");
-const { buildRow, writeFile, fillIFDWeight } = require("./pipes.helper");
+const {
+  buildRow,
+  writeFile,
+  fillIFDWeight,
+  isEqual,
+} = require("./pipes.helper");
 
 exports.getModelledFrom3D = async () => {
   try {
@@ -33,7 +38,7 @@ exports.getModelledFrom3D = async () => {
   }
 };
 
-exports.updateLines = async () => {
+exports.updateLines2 = async () => {
   try {
     const results = await csv().fromFile(process.env.NODE_LINES_ROUTE);
     await pool.query("TRUNCATE TABLE `lines`");
@@ -56,6 +61,70 @@ exports.updateLines = async () => {
         ]
       );
     }
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+exports.updateLines = async () => {
+  try {
+    const new_lines = await csv().fromFile(process.env.NODE_LINES_ROUTE);
+    const [old_lines] = await pool.query("SELECT * FROM `lines`");
+    const updated = [];
+    for (let i = 0; i < 5; i++) {
+      // for (let i = 0; i < old_lines.length; i++) {
+      // if exists
+      const idx = new_lines.findIndex(
+        (line) => old_lines[i].refno === line.refno
+      );
+      if (idx > -1) {
+        // check if changed
+        if (!isEqual(old_lines[i], new_lines[idx])) {
+          // update
+          return;
+          await pool.query(
+            "UPDATE `lines`SET (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+            [
+              new_lines[idx].refno,
+              new_lines[idx].tag,
+              new_lines[idx].unit,
+              new_lines[idx].fluid,
+              new_lines[idx].seq,
+              new_lines[idx].spec,
+              new_lines[idx].pid,
+              new_lines[idx].strlvl,
+              new_lines[idx].cnote,
+              new_lines[idx].insulation,
+              new_lines[idx].diam,
+            ]
+          );
+          // add to updated
+          updated.push(new_lines[idx]);
+        }
+      } else {
+      }
+    }
+    console.log(old_lines.length, test.length);
+    // await pool.query("TRUNCATE TABLE `lines`");
+    // for (let i = 0; i < results.length; i++) {
+    //   const line = results[i];
+    //   await pool.query(
+    //     "INSERT INTO `lines` (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    //     [
+    //       line.refno,
+    //       line.tag,
+    //       line.unit,
+    //       line.fluid,
+    //       line.seq,
+    //       line.spec,
+    //       line.pid,
+    //       line.strlvl,
+    //       line.cnote,
+    //       line.insulation,
+    //       line.diam,
+    //     ]
+    //   );
+    // }
   } catch (err) {
     console.error(err);
     throw err;
