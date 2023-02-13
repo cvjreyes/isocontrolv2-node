@@ -6,6 +6,8 @@ const {
   addPipeToIFD,
   removePipeFromIFD,
   updatePipeInIFD,
+  getPipeService,
+  addPipeFromFeedService,
 } = require("./feed.microservices");
 
 exports.getProgressService = async (tableName) => {
@@ -25,36 +27,31 @@ exports.getProgressService = async (tableName) => {
   return (total / pipes.length).toFixed(2);
 };
 
-exports.getFeedPipesService = async () => {
+exports.getPipesService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM feed_pipes_view ORDER BY id DESC"
   );
   return pipes;
 };
 
-exports.getFeedForecastService = async () => {
+exports.getForecastService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM feed_forecast ORDER BY week DESC"
   );
   return pipes;
 };
 
-exports.getFeedProgressService = async () => {
+exports.getProgressDataService = async () => {
   const [pipes] = await pool.query(
     "SELECT feed_progress.*, feed_forecast.estimated, feed_forecast.forecast FROM feed_progress JOIN feed_forecast ON feed_progress.id = feed_forecast.`week` ORDER BY id ASC"
   );
   return pipes;
 };
 
-exports.getFEEDPipeService = async (id) => {
-  const [pipe] = await pool.query("SELECT * FROM feed_pipes WHERE id = ?", id);
-  return pipe[0];
-};
-
-exports.updateFeedPipesService = async (data) => {
+exports.updatePipesService = async (data) => {
   return await data.forEach(async (pipe) => {
     const area_id = await getAreaId(pipe.area);
-    const { status: previousStatus } = await this.getFEEDPipeService(pipe.id);
+    const { status: previousStatus } = await getPipeService(pipe.id);
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
@@ -80,13 +77,7 @@ exports.updateFeedPipesService = async (data) => {
   });
 };
 
-exports.deletePipe = async (id) => {
-  const [pipes] = await pool.query("DELETE FROM feed_pipes WHERE id = ?", id);
-  await pool.query("DELETE FROM ifd_pipes WHERE feed_id = ?", id);
-  return pipes;
-};
-
-exports.addFeedPipesService = async (pipe) => {
+exports.addPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   const [res] = await pool.query(
     "INSERT INTO feed_pipes (line_refno, area_id, train, status) VALUES (?, ?, ?, ?)",
@@ -96,13 +87,6 @@ exports.addFeedPipesService = async (pipe) => {
     await addPipeFromFeedService(pipe, res.insertId, area_id, pipe.line_refno);
   }
   return res;
-};
-
-const addPipeFromFeedService = async (pipe, id, area, line_refno) => {
-  await pool.query(
-    "INSERT INTO ifd_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
-    [line_refno, id, area, pipe.train, "FEED_ESTIMATED"]
-  );
 };
 
 exports.addForecastService = async (data) => {
@@ -119,6 +103,12 @@ exports.addForecastService = async (data) => {
     console.error(err);
     throw new Error("Something went wrong updating feed pipes");
   }
+};
+
+exports.deletePipe = async (id) => {
+  const [pipes] = await pool.query("DELETE FROM feed_pipes WHERE id = ?", id);
+  await pool.query("DELETE FROM ifd_pipes WHERE feed_id = ?", id);
+  return pipes;
 };
 
 exports.deleteForecastService = async (week) => {

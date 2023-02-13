@@ -4,25 +4,25 @@ const router = require("express").Router(),
 
 router.get("/get_progress", checkAuth, controller.getProgress);
 
-router.get("/get_ifd_pipes/:trashed", checkAuth, controller.getIFDPipes);
+router.get("/get_some_pipes/:trashed", checkAuth, controller.getPipes);
 
 router.get("/get_my_pipes", checkAuth, controller.getMyPipes);
 
 router.get(
-  "/get_ifd_pipes_from_tray/:status",
+  "/get_pipes_from_tray/:status",
   checkAuth,
-  controller.getIFDPipesFromTray
+  controller.getPipesFromTray
 );
 
-router.get("/get_ifd_progress", checkAuth, controller.getIFDProgress);
+router.get("/get_progress_data", checkAuth, controller.getProgress);
 
-router.get("/get_ifd_forecast", checkAuth, controller.getIFDForecast);
+router.get("/get_forecast", checkAuth, controller.getForecast);
 
-router.post("/claim_ifd_pipes", checkAuth, controller.claimIFDPipes);
+router.post("/claim_pipes", checkAuth, controller.claimPipes);
 
-router.post("/unclaim_ifd_pipes", checkAuth, controller.unclaimIFDPipes);
+router.post("/unclaim_pipes", checkAuth, controller.unclaimPipes);
 
-router.post("/submit_ifd_pipes", checkAuth, controller.submitIFDPipes);
+router.post("/submit_pipes", checkAuth, controller.submitPipes);
 
 router.post("/add_pipes", checkAuth, controller.addPipes);
 
@@ -32,9 +32,9 @@ router.post("/return", checkAuth, controller.previousStep);
 
 router.post("/change_actions", checkAuth, controller.changeActions);
 
-router.post("/restore_ifd_pipes", checkAuth, controller.restoreIFDPipes);
+router.post("/restore_pipes", checkAuth, controller.restorePipes);
 
-router.post("/submit_ifd_forecast", checkAuth, controller.submitIFDForecast);
+router.post("/submit_forecast", checkAuth, controller.submitForecast);
 
 router.delete("/delete_pipe/:id", checkAuth, controller.deletePipe);
 
