@@ -44,3 +44,28 @@ exports.fillIFDWeight = (data) => {
   }
   return data;
 };
+
+exports.isEqual = (oldPipe, newPipe) => {
+  let changed = "";
+  for (const [key, val] of Object.entries(keyNamesInCSV)) {
+    if (oldPipe[key] !== newPipe[val]) {
+      changed += ` The ${key} changed from ${oldPipe[key]} to ${newPipe[val]}.`;
+    }
+  }
+  changed = changed.trim();
+  console.log("changed: ", changed);
+};
+
+const keyNamesInCSV = {
+  refno: "refno",
+  line_reference: "tag",
+  unit: "unit",
+  fluid: "fluid",
+  seq: "seq",
+  spec_code: "spec",
+  pid: "pid",
+  stress_level: "strlvl",
+  calc_notes: "cnote",
+  insulation: "insulation",
+  diameter: "diam",
+};
