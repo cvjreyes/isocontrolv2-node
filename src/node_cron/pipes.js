@@ -66,6 +66,7 @@ exports.updateLines2 = async () => {
     throw err;
   }
 };
+
 exports.updateLines = async () => {
   try {
     const new_lines = await csv().fromFile(process.env.NODE_LINES_ROUTE);
@@ -79,11 +80,11 @@ exports.updateLines = async () => {
       );
       if (idx > -1) {
         // check if changed
-        if (!isEqual(old_lines[i], new_lines[idx])) {
-          // update
-          return;
+        const changed = isEqual(old_lines[i], new_lines[idx]);
+        if (changed) {
+          // update lines DB
           await pool.query(
-            "UPDATE `lines`SET (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+            "UPDATE `lines` SET refno = ?, line_reference = ?, unit = ?, fluid = ?, seq = ?, spec_code = ?, pid = ?, stress_level = ?, calc_notes = ?, insulation = ?, diameter = ? WHERE id = ?",
             [
               new_lines[idx].refno,
               new_lines[idx].tag,
@@ -96,35 +97,18 @@ exports.updateLines = async () => {
               new_lines[idx].cnote,
               new_lines[idx].insulation,
               new_lines[idx].diam,
+              old_lines[i].id,
             ]
           );
-          // add to updated
-          updated.push(new_lines[idx]);
+          // update notifications DB
+          //
         }
       } else {
+        // delete line
+        await pool.query("DELETE FROM `lines` WHERE id = ?", old_lines[i]);
       }
+      // add lines that are not currently in the DB
     }
-    console.log(old_lines.length, test.length);
-    // await pool.query("TRUNCATE TABLE `lines`");
-    // for (let i = 0; i < results.length; i++) {
-    //   const line = results[i];
-    //   await pool.query(
-    //     "INSERT INTO `lines` (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    //     [
-    //       line.refno,
-    //       line.tag,
-    //       line.unit,
-    //       line.fluid,
-    //       line.seq,
-    //       line.spec,
-    //       line.pid,
-    //       line.strlvl,
-    //       line.cnote,
-    //       line.insulation,
-    //       line.diam,
-    //     ]
-    //   );
-    // }
   } catch (err) {
     console.error(err);
     throw err;
