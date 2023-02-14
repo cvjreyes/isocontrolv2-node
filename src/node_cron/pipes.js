@@ -3,6 +3,14 @@ const csv = require("csvtojson");
 const pool = require("../../config/db");
 const { fillType } = require("../helpers/pipes");
 const {
+  getLineRefsAllService,
+  addLine,
+  updateLine,
+} = require("../main/lines/lines.service");
+const {
+  addNotification,
+} = require("../main/notifications/notifications.helpers");
+const {
   buildRow,
   writeFile,
   fillIFDWeight,
@@ -38,76 +46,45 @@ exports.getModelledFrom3D = async () => {
   }
 };
 
-exports.updateLines2 = async () => {
-  try {
-    const results = await csv().fromFile(process.env.NODE_LINES_ROUTE);
-    await pool.query("TRUNCATE TABLE `lines`");
-    for (let i = 0; i < results.length; i++) {
-      const line = results[i];
-      await pool.query(
-        "INSERT INTO `lines` (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          line.refno,
-          line.tag,
-          line.unit,
-          line.fluid,
-          line.seq,
-          line.spec,
-          line.pid,
-          line.strlvl,
-          line.cnote,
-          line.insulation,
-          line.diam,
-        ]
-      );
-    }
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
 exports.updateLines = async () => {
   try {
     const new_lines = await csv().fromFile(process.env.NODE_LINES_ROUTE);
-    const [old_lines] = await pool.query("SELECT * FROM `lines`");
-    const updated = [];
-    for (let i = 0; i < 5; i++) {
-      // for (let i = 0; i < old_lines.length; i++) {
-      // if exists
+    const [old_lines] = await getLineRefsAllService();
+    for (let i = 0; i < old_lines.length; i++) {
+      // find index
       const idx = new_lines.findIndex(
         (line) => old_lines[i].refno === line.refno
       );
+      // if exists
       if (idx > -1) {
         // check if changed
-        const changed = isEqual(old_lines[i], new_lines[idx]);
-        if (changed) {
+        const { title, description } = isEqual(old_lines[i], new_lines[idx]);
+        // if changed
+        if (description) {
           // update lines DB
-          await pool.query(
-            "UPDATE `lines` SET refno = ?, line_reference = ?, unit = ?, fluid = ?, seq = ?, spec_code = ?, pid = ?, stress_level = ?, calc_notes = ?, insulation = ?, diameter = ? WHERE id = ?",
-            [
-              new_lines[idx].refno,
-              new_lines[idx].tag,
-              new_lines[idx].unit,
-              new_lines[idx].fluid,
-              new_lines[idx].seq,
-              new_lines[idx].spec,
-              new_lines[idx].pid,
-              new_lines[idx].strlvl,
-              new_lines[idx].cnote,
-              new_lines[idx].insulation,
-              new_lines[idx].diam,
-              old_lines[i].id,
-            ]
-          );
+          await updateLine(new_lines[idx], old_lines[i].id);
           // update notifications DB
-          //
+          await addNotification(title, description);
         }
       } else {
         // delete line
-        await pool.query("DELETE FROM `lines` WHERE id = ?", old_lines[i]);
+        await pool.query("DELETE FROM `lines` WHERE id = ?", old_lines[i].id);
+        await addNotification(
+          `Line ${old_lines[i].line_reference} was deleted`
+        );
       }
-      // add lines that are not currently in the DB
+    }
+    // add lines that are not currently in the DB
+    for (let i = 0; i < new_lines.length; i++) {
+      // find index
+      const idx = old_lines.findIndex(
+        (line) => new_lines[i].refno === line.refno
+      );
+      if (idx === -1) {
+        // add it if it doesn't exist
+        await addLine(new_lines[i]);
+        await addNotification(`Line ${new_lines[i].tag} was added`);
+      }
     }
   } catch (err) {
     console.error(err);

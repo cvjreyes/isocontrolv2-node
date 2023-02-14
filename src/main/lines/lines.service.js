@@ -1,9 +1,50 @@
 const pool = require("../../../config/db");
 
 exports.getLineRefsService = async () => {
-  const [lines] = await pool.query(
-    "SELECT line_reference as line_ref, spec_code as spec, insulation, calc_notes, unit, fluid, seq, diameter, refno as line_refno FROM `lines`"
+  return await pool.query(
+    "SELECT id, line_reference as line_ref, spec_code as spec, insulation, calc_notes, unit, fluid, seq, diameter, refno as line_refno FROM `lines`"
   );
-  if (!lines[0]) return 0;
-  return lines;
+};
+
+exports.getLineRefsAllService = async () => {
+  return await pool.query("SELECT * FROM `lines`");
+};
+
+exports.updateLine = async (line, id) => {
+  await pool.query(
+    "UPDATE `lines` SET refno = ?, line_reference = ?, unit = ?, fluid = ?, seq = ?, spec_code = ?, pid = ?, stress_level = ?, calc_notes = ?, insulation = ?, diameter = ? WHERE id = ?",
+    [
+      line.refno,
+      line.tag,
+      line.unit,
+      line.fluid,
+      line.seq,
+      line.spec,
+      line.pid,
+      line.strlvl,
+      line.cnote,
+      line.insulation,
+      line.diam,
+      id,
+    ]
+  );
+};
+
+exports.addLine = async (line) => {
+  await pool.query(
+    "INSERT INTO `lines` (refno, line_reference, unit, fluid, seq, spec_code, pid, stress_level, calc_notes, insulation, diameter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      line.refno,
+      line.tag,
+      line.unit,
+      line.fluid,
+      line.seq,
+      line.spec,
+      line.pid,
+      line.strlvl,
+      line.cnote,
+      line.insulation,
+      line.diam,
+    ]
+  );
 };

@@ -10,6 +10,7 @@ const {
   updateUserService,
   generateLinkService,
   savePasswordService,
+  updateLastSeenService,
 } = require("./user.services");
 const validator = require("validator");
 const {
@@ -135,6 +136,17 @@ exports.update = async (req, res) => {
   try {
     await updateUserService(data);
     send(res, true, `User${data.length > 1 ? "s" : ""} updated successfully!`);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.updateLastSeen = async (req, res) => {
+  const { user_id } = req;
+  try {
+    await updateLastSeenService(user_id);
+    send(res, true);
   } catch (err) {
     console.error(err);
     send(res, false, err);

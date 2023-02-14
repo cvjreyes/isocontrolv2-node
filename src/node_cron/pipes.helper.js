@@ -46,15 +46,14 @@ exports.fillIFDWeight = (data) => {
 };
 
 exports.isEqual = (oldPipe, newPipe) => {
-  // let changed = `The pipe ${oldPipe}`;
-  let changed = "";
+  const title = `The line ${newPipe.tag} has been updated.`;
+  let description = "";
   for (const [key, val] of Object.entries(keyNamesInCSV)) {
     if (oldPipe[key] !== newPipe[val]) {
-      changed += ` The ${key} changed from ${oldPipe[key]} to ${newPipe[val]}.`;
+      description += ` The ${key} changed from ${oldPipe[key]} to ${newPipe[val]}.`;
     }
   }
-  console.log("changed: ", changed);
-  return changed.trim();
+  return { description: description.trim(), title };
 };
 
 const keyNamesInCSV = {
