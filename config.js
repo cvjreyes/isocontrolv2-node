@@ -1,1 +1,0 @@
-const numOfFEEDPipes = 100;

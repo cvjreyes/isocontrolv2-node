@@ -6,3 +6,7 @@ exports.getLast10Service = async () => {
   );
   return notifications;
 };
+
+exports.getSomeService = async (count) => {
+  const [notifications] = await pool.query("SELECT * FROM notifications ");
+};
