@@ -93,7 +93,7 @@ exports.getPipesFromTray = async (req, res) => {
   }
 };
 
-exports.getProgress = async (req, res) => {
+exports.getProgressData = async (req, res) => {
   //Get del progreso del feed para montar la grafica
   try {
     const IFDProgress = await getProgressService();

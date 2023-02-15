@@ -14,9 +14,11 @@ router.post("/change_password", checkAuth, controller.changePassword);
 
 router.post("/create_admin", controller.createAdmin);
 
-router.post("/create", controller.create);
+router.post("/create", checkAuth, controller.create);
 
 router.post("/update", controller.update);
+
+router.post("/update_last_seen", checkAuth, controller.updateLastSeen);
 
 router.post("/request_access", controller.requestAccess);
 

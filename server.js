@@ -34,6 +34,10 @@ app.use("/ifc", require("./src/main/ifc/ifc.routes"));
 app.use("/lines", require("./src/main/lines/lines.routes"));
 app.use("/areas", require("./src/main/areas/areas.routes"));
 app.use("/roles", require("./src/main/roles/roles.routes"));
+app.use(
+  "/notifications",
+  require("./src/main/notifications/notifications.routes")
+);
 app.use("/navis", require("./src/main/navis/navis.routes"));
 
 // NODE-CRON
