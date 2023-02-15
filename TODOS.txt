@@ -1,3 +1,4 @@
 TO DO ❌:
+- updateLines: refactor into 2 functions in services
 - revisar que las INSERT, DELETE, TRUNCATE, CREATE queries usen withTrasaction
 

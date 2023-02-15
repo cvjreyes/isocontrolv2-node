@@ -3,7 +3,7 @@ const pool = require("../../../config/db");
 const { createToken } = require("../../helpers/token");
 const { insertTokenIntoDB } = require("./user.microservices");
 const { checkIfEmailExists } = require("./user.validations");
-const { getName } = require("./users.helpers");
+const { getName, getTimeAsSQL } = require("./users.helpers");
 
 exports.findAllUsersService = async () => {
   const [users] = await pool.query("SELECT * FROM users");
@@ -101,6 +101,13 @@ exports.updateUserService = async (data) => {
     }
   }
   return true;
+};
+
+exports.updateLastSeenService = async (user_id) => {
+  await pool.query(
+    "UPDATE users SET last_opened_notifications = CURRENT_TIMESTAMP WHERE id = ?",
+    [user_id]
+  );
 };
 
 exports.generateLinkService = async (user, page, expiresIn) => {
