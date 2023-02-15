@@ -14,7 +14,7 @@ router.get(
   controller.getPipesFromTray
 );
 
-router.get("/get_progress_data", checkAuth, controller.getProgress);
+router.get("/get_progress_data", checkAuth, controller.getProgressData);
 
 router.get("/get_forecast", checkAuth, controller.getForecast);
 

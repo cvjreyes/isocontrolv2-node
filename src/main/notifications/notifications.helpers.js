@@ -6,3 +6,8 @@ exports.addNotification = async (title, description) => {
     [title, description]
   );
 };
+
+exports.getTotalRows = async (table) => {
+  const [total] = await pool.query(`SELECT COUNT(id) FROM ${table}`);
+  return total[0]["COUNT(id)"];
+};

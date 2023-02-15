@@ -46,7 +46,7 @@ exports.fillIFDWeight = (data) => {
 };
 
 exports.isEqual = (oldPipe, newPipe) => {
-  const title = `The line ${newPipe.tag} has been updated.`;
+  const title = `Line ${newPipe.tag} has been updated.`;
   let description = "";
   for (const [key, val] of Object.entries(keyNamesInCSV)) {
     if (oldPipe[key] !== newPipe[val]) {

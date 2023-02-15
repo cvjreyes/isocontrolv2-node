@@ -1,4 +1,5 @@
 const { send } = require("../../helpers/send");
+const { getTotalRows } = require("./notifications.helpers");
 const {
   getLast10Service,
   getSomeService,
@@ -17,8 +18,9 @@ exports.getLast10 = async (req, res) => {
 exports.getSome = async (req, res) => {
   const { count } = req.params;
   try {
-    const notifications = getSomeService(count);
-    send(res, true);
+    const notifications = await getSomeService(count);
+    const total = !Number(count) && (await getTotalRows("notifications"));
+    send(res, true, { notifications, total });
   } catch (err) {
     console.error(err);
     send(res, false, err);
