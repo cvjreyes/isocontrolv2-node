@@ -105,7 +105,7 @@ exports.createAdmin = async (req, res) => {
   const { email, pw } = req.body;
   try {
     const ok = await createAdminService(email.trim(), pw.trim());
-    if (ok) return send(res, true);
+    if (ok) return send(res, true, "Admin created successfully");
     return send(res, false, "Stop inventing");
   } catch (err) {
     console.error(err);
