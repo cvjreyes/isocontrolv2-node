@@ -2,8 +2,8 @@ const md5 = require("md5");
 const pool = require("../../../config/db");
 const { createToken } = require("../../helpers/token");
 const { insertTokenIntoDB } = require("./user.microservices");
-const { checkIfEmailExists } = require("./user.validations");
-const { getName, getTimeAsSQL } = require("./users.helpers");
+const { checkIfEmailsExist } = require("./user.validations");
+const { getName } = require("./users.helpers");
 
 exports.findAllUsersService = async () => {
   const [users] = await pool.query("SELECT * FROM users");
@@ -46,15 +46,28 @@ exports.changePasswordService = async (pw, user_id) => {
 };
 
 exports.createAdminService = async (email, pw) => {
-  const exists = await checkIfEmailExists(email);
-  if (exists) return false;
+  const nonExistent = await checkIfEmailsExist([{ email }]);
+  if (!nonExistent) return false;
   const encryptedPw = md5(pw);
   const fullName = getName(email);
-  await pool.query(
-    "INSERT INTO users (name, email, password, admin) VALUES (?, ?, ?, 1)",
+  const [{ insertId: user_id }] = await pool.query(
+    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
     [fullName, email, encryptedPw]
   );
+  addAdminRoles(user_id);
   return true;
+};
+
+const addAdminRoles = async (user_id) => {
+  const [role] = await pool.query(
+    "SELECT * FROM roles WHERE name = ?",
+    "Speciality Lead"
+  );
+  const [res] = await pool.query(
+    "INSERT INTO model_has_roles (role_id, user_id) VALUES (?, ?)",
+    [role[0].id, user_id]
+  );
+  console.log(res);
 };
 
 exports.createUserService = async (data) => {
