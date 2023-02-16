@@ -15,7 +15,7 @@ const {
 
 exports.getProgress = async (req, res) => {
   try {
-    const progress = await getProgressService("feed_pipes");
+    const progress = await getProgressService();
     return send(res, true, progress);
   } catch (err) {
     console.error(err);
