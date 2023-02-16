@@ -46,7 +46,7 @@ exports.getProgress = async (req, res) => {
       }
       const percentage =
         progressNumbers[type][data[i].status.toLowerCase().replace("*", "")] ||
-        0;
+        10;
       totalWeight += weights[type];
       currentWeight += (percentage * weights[type]) / 100;
     }

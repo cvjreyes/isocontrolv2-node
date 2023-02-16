@@ -21,6 +21,8 @@ exports.getProgressService = async (tableName) => {
       total += 80;
     } else if (status.includes("MODELLED(100%)")) {
       total += 100;
+    } else if (status.includes("ESTIMATED")) {
+      total += 10;
     }
   });
 
