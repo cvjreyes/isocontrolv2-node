@@ -10,8 +10,11 @@ const {
   addPipeFromFeedService,
 } = require("./feed.microservices");
 
-exports.getProgressService = async (tableName) => {
-  const [pipes] = await pool.query(`SELECT status FROM ${tableName}`);
+exports.getProgressService = async () => {
+  const [pipes] = await pool.query(`SELECT status FROM feed_pipes`);
+  const [totalLines] = await pool.query(
+    "SELECT * FROM total_lines WHERE page = 'FEED'"
+  );
   if (!pipes[0]) return 0;
   let total = 0;
   pipes.forEach(({ status }) => {
@@ -25,8 +28,7 @@ exports.getProgressService = async (tableName) => {
       total += 10;
     }
   });
-
-  return (total / pipes.length).toFixed(2);
+  return (total / (totalLines[0]?.total || pipes.length)).toFixed(2);
 };
 
 exports.getPipesService = async () => {
