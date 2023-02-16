@@ -32,9 +32,16 @@ exports.getProgress = async (req, res) => {
     const [data] = await pool.query(
       "SELECT status, calc_notes, diameter FROM ifd_pipes_view WHERE trashed = 0"
     );
-    for (let i = 0; i < data.length; i++) {
+    const [totalLines] = await pool.query(
+      "SELECT * FROM total_lines WHERE page = 'IFD'"
+    );
+    for (let i = 0; i < totalLines[0]?.total; i++) {
       let type;
-      if (data[i].calc_notes !== "NA" || data[i].calc_notes !== "unset") {
+      if (!data[i]?.calc_notes) {
+      } else if (
+        data[i].calc_notes !== "NA" ||
+        data[i].calc_notes !== "unset"
+      ) {
         type = "TL3";
       } else if (
         (process.env.NODE_NPSDN == "0" && data[i].diameter < 2.0) ||
@@ -44,11 +51,13 @@ exports.getProgress = async (req, res) => {
       } else {
         type = "TL2";
       }
-      const percentage =
-        progressNumbers[type][data[i].status.toLowerCase().replace("*", "")] ||
-        0;
-      totalWeight += weights[type];
-      currentWeight += (percentage * weights[type]) / 100;
+      const percentage = !type
+        ? 0
+        : progressNumbers[type][
+            data[i].status.toLowerCase().replace("*", "")
+          ] || 10;
+      totalWeight += weights[type] || 6;
+      currentWeight += (percentage * (weights[type] || 6)) / 100;
     }
     const progress = !totalWeight
       ? 0
