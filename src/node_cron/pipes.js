@@ -38,11 +38,14 @@ exports.getModelledFrom3D = async () => {
           "UPDATE ifd_pipes SET status = 'MODELLED' WHERE id = ?",
           found[0].id
         );
+        await addNotification(
+          `Pipe: ${found[0].line_reference} was updated`,
+          `This pipe was marked as MODELLED`
+        );
       }
     }
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 
