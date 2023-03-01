@@ -32,7 +32,7 @@ exports.checkIfUserExistsService = async (email) => {
 
 exports.getOwnersService = async () => {
   const [owners] = await pool.query(
-    "SELECT `users`.`name` as name FROM `users` LEFT JOIN model_has_roles ON `users`.id = model_has_roles.user_id  LEFT JOIN roles ON `model_has_roles`.role_id = roles.id WHERE role_id = 1"
+    "SELECT `users`.`name` as name FROM `users` LEFT JOIN model_has_roles ON `users`.id = model_has_roles.user_id  LEFT JOIN roles ON `model_has_roles`.role_id = roles.id WHERE role_id = 1 OR role_id = 2"
   );
   return owners;
 };
@@ -63,11 +63,10 @@ const addAdminRoles = async (user_id) => {
     "SELECT * FROM roles WHERE name = ?",
     "Speciality Lead"
   );
-  const [res] = await pool.query(
+  await pool.query(
     "INSERT INTO model_has_roles (role_id, user_id) VALUES (?, ?)",
     [role[0].id, user_id]
   );
-  console.log(res);
 };
 
 exports.createUserService = async (data) => {

@@ -35,7 +35,8 @@ exports.getProgress = async (req, res) => {
     const [totalLines] = await pool.query(
       "SELECT * FROM total_lines WHERE page = 'IFD'"
     );
-    for (let i = 0; i < totalLines[0]?.total; i++) {
+    const total = totalLines[0]?.total || data.length;
+    for (let i = 0; i < total; i++) {
       let type;
       if (!data[i]?.calc_notes) {
       } else if (
