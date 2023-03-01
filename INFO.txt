@@ -1,13 +1,18 @@
 BBDD USADAS
 - areas
-- lines
-- users
-- feed_pipes
-- ifd_pipes
 - feed_forecast
-- gfeed
+- feed_pipes
+- feed_progress
+- ifd_forecast
+- ifd_pipes
+- ifd_progress
+- lines
 - model_has_roles
-- roles 
+- notifications
+- owners
+- roles
+- total_lines
+- users
 
 VIEW USADAS
 -  feed_pipes_view

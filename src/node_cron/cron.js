@@ -8,9 +8,10 @@ const {
 } = require("./pipes");
 
 const cronFn = () => {
+  // cron.schedule("* * * * *", () => {
   cron.schedule("*/10 * * * *", () => {
     getModelledFrom3D();
-    console.log(
+    console.info(
       new Date(Date.now()).toLocaleDateString(),
       new Date(Date.now()).toLocaleTimeString(),
       "Modelled updated"
@@ -19,7 +20,7 @@ const cronFn = () => {
   // cron.schedule("* * * * *", () => {
   cron.schedule("*/10 * * * *", () => {
     updateLines();
-    console.log(
+    console.info(
       new Date(Date.now()).toLocaleDateString(),
       new Date(Date.now()).toLocaleTimeString(),
       "Lines updated"
@@ -27,16 +28,17 @@ const cronFn = () => {
   });
   cron.schedule("*/10 * * * *", () => {
     exportModelledPipes();
-    console.log(
+    console.info(
       new Date(Date.now()).toLocaleDateString(),
       new Date(Date.now()).toLocaleTimeString(),
       "Modelled pipes exported"
     );
   });
+  // cron.schedule("* * * * *", () => {
   cron.schedule("0 1 * * 5", () => {
     saveFEEDWeight();
     saveIFDWeight();
-    console.log(
+    console.info(
       new Date(Date.now()).toLocaleDateString(),
       new Date(Date.now()).toLocaleTimeString(),
       "Progresses updated"
