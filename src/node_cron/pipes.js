@@ -98,7 +98,7 @@ exports.updateLines = async () => {
 exports.exportModelledPipes = async () => {
   try {
     // prepare data
-    const [pipes] = await pool.query("SELECT * FROM ifd_pipes_view");
+    const [pipes] = await pool.query("SELECT * FROM feed_pipes_view");
     let data = "TAGS\nONERROR CONTINUE\n/Cpipes\n";
     pipes.forEach((pipe) => {
       data += buildRow(pipe);
