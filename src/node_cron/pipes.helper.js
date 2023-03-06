@@ -59,6 +59,7 @@ exports.isEqual = (oldPipe, newPipe) => {
 const keyNamesInCSV = {
   refno: "refno",
   line_reference: "tag",
+  diameter: "diam",
   unit: "unit",
   fluid: "fluid",
   seq: "seq",
@@ -67,5 +68,5 @@ const keyNamesInCSV = {
   stress_level: "strlvl",
   calc_notes: "cnote",
   insulation: "insulation",
-  diameter: "diam",
+  gasket: "gasket",
 };
