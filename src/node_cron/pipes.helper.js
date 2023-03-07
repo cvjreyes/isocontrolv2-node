@@ -11,7 +11,9 @@ const buildTag = (pipe) => {
   let tag = "";
   let tag_order = process.env.NODE_TAG_ORDER.split(/[ -]+/);
   for (let i = 0; i < tag_order.length; i++) {
-    if (i === tag_order.length - 1) {
+    if (tag_order[i] === "gasket") {
+      tag += pipe[tag_order[i]];
+    } else if (i === tag_order.length - 1) {
       tag += "_" + pipe[tag_order[i]];
     } else if (i === 0) {
       tag = pipe[tag_order[i]];

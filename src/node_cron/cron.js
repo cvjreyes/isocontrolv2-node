@@ -26,8 +26,8 @@ const cronFn = () => {
       "Lines updated"
     );
   });
-  // cron.schedule("* * * * *", () => {
-  cron.schedule("*/10 * * * *", () => {
+  cron.schedule("* * * * *", () => {
+    // cron.schedule("*/10 * * * *", () => {
     exportModelledPipes();
     console.info(
       new Date(Date.now()).toLocaleDateString(),
