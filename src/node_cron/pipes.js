@@ -131,7 +131,6 @@ exports.saveFEEDWeight = async () => {
         progress += 100;
       }
     }
-    console.log(max_progress, progress);
     await pool.query(
       "INSERT INTO feed_progress(progress, max_progress) VALUES(?,?)",
       [progress, max_progress]

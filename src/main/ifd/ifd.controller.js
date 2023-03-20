@@ -1,5 +1,6 @@
 const pool = require("../../../config/db");
 const { send } = require("../../helpers/send");
+const { checkIfPipeExists } = require("../feed/feed.services");
 const {
   deletePipe,
   getPipesService,
@@ -164,6 +165,10 @@ exports.submitPipes = async (req, res) => {
 exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
+    for (let i = 0; i < data.length; i++) {
+      const exists = await checkIfPipeExists(data[i]);
+      if (exists) return send(res, false, "Some pipe does already exist");
+    }
     await data.forEach(async (pipe, i) => {
       await addPipesService(pipe, i);
     });
