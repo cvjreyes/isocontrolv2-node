@@ -137,7 +137,6 @@ exports.saveFEEDWeight = async () => {
     );
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 

@@ -81,6 +81,21 @@ exports.updatePipesService = async (data) => {
   });
 };
 
+exports.checkIfPipeExists = async (pipe) => {
+  const [found] = await pool.query(
+    "SELECT * FROM feed_pipes_view WHERE unit = ? AND fluid = ? AND seq = ? AND area = ? AND diameter = ? AND train = ?",
+    [
+      pipe.unit,
+      pipe.fluid,
+      pipe.seq,
+      pipe.area,
+      Number(pipe.diameter),
+      pipe.train,
+    ]
+  );
+  return !!found[0];
+};
+
 exports.addPipesService = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   const [res] = await pool.query(

@@ -10,6 +10,7 @@ const {
   addForecastService,
   deleteForecastService,
   getProgressDataService,
+  checkIfPipeExists,
 } = require("./feed.services");
 // const { saveFeedWeight } = require("../../node_cron/pipes");
 
@@ -70,12 +71,13 @@ exports.submitPipes = async (req, res) => {
 exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
+    for (let i = 0; i < data.length; i++) {
+      const exists = await checkIfPipeExists(data[i]);
+      if (exists) return send(res, false, "Some pipe does already exist");
+    }
     data.forEach(async (pipe, i) => {
       await addPipesService(pipe, i);
     });
-    // setTimeout(() => {
-    //   saveFeedWeight();
-    // }, 1000);
     send(res, true);
   } catch (err) {
     console.error(err);
