@@ -6,7 +6,6 @@ router.get("/get_progress", checkAuth, controller.getProgress);
 
 router.get("/get_all_pipes", checkAuth, controller.getAllPipes);
 
-
 router.get("/get_forecast", checkAuth, controller.getForecast);
 
 router.get("/get_progress_data", checkAuth, controller.getProgressData);

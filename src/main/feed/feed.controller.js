@@ -11,7 +11,6 @@ const {
   deleteForecastService,
   getProgressDataService,
   checkIfPipeExists,
-  getReportPipesService,
 } = require("./feed.services");
 // const { saveFeedWeight } = require("../../node_cron/pipes");
 

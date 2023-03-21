@@ -16,7 +16,6 @@ const {
   getProgressService,
   getForecastService,
   addForecastService,
-  getReportPipesService,
 } = require("./ifd.services.js");
 const { progressNumbers } = require("../../helpers/progressNumbers");
 
