@@ -24,7 +24,7 @@ exports.calculateNextStep = (type, status) => {
   const tempStatus = status.replace("-", "").replace("*", "").toLowerCase();
   const idx = list.findIndex((item) => tempStatus == item);
   const nextStep = list[idx] === "sdesign" ? "IsoTracker" : list[idx + 1];
-  return this.formatStatus(nextStep);
+  return this.formatIFDStatus(nextStep);
 };
 
 exports.calculatePreviousStep = (type, status) => {
@@ -32,16 +32,32 @@ exports.calculatePreviousStep = (type, status) => {
   const tempStatus = status.replace("-", "").replace("*", "").toLowerCase();
   const idx = list.findIndex((item) => tempStatus == item);
   const previousStep = list[idx] === "modelled" ? "modelled" : list[idx - 1];
-  return this.formatStatus(previousStep);
+  return this.formatIFDStatus(previousStep);
 };
 
-exports.formatStatus = (status) => {
+exports.formatIFDStatus = (status) => {
   const list = {
     sstress: "S-Stress",
     rstress: "R-Stress",
     stress: "Stress",
     supports: "Supports",
     sdesign: "S-Design",
+  };
+  return (
+    list[status.toLowerCase()] ||
+    status.charAt(0) + status.slice(1).toLowerCase().replace("_", " ")
+  );
+};
+
+exports.formatIFCStatus = (status) => {
+  const list = {
+    design: "Design",
+    stress: "Stress",
+    supports: "Supports",
+    materials: "Materials",
+    issuer: "Issuer",
+    toissue: "To Issue",
+    issued: "Issued",
   };
   return (
     list[status.toLowerCase()] ||

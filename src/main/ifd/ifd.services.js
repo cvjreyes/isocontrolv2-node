@@ -7,10 +7,11 @@ const {
 } = require("../../helpers/pipes");
 const {
   calculateNextStep,
-  formatStatus,
+  formatIFDStatus,
   calculatePreviousStep,
 } = require("../../helpers/progressNumbers");
 const { withTransaction } = require("../../helpers/withTransaction");
+const { addToIFC, removeFromIFC } = require("../ifc/ifc.services");
 const {
   updatePipeInFeed,
   addFeedPipesFromIFDService,
@@ -24,7 +25,7 @@ exports.getPipesService = async (trashed) => {
   const rows = fillType(resRows);
   const rowsEnd = rows.map((row) => ({
     ...row,
-    status: formatStatus(row.status),
+    status: formatIFDStatus(row.status),
   }));
   return rowsEnd;
 };
@@ -39,9 +40,14 @@ exports.getMyPipesService = async (id) => {
   const rowsEnd = rows2.map((row) => ({
     ...row,
     next_step: calculateNextStep(row.type, row.status),
-    status: formatStatus(row.status),
+    status: formatIFDStatus(row.status),
   }));
   return rowsEnd;
+};
+
+exports.getReportPipesService = async () => {
+  const [report] = await pool.query("SELECT * FROM report_ifd_pipes_view");
+  return report;
 };
 
 exports.getPipesFromTrayService = async (status) => {
@@ -134,6 +140,7 @@ exports.nextStepService = async (data) => {
           [nextStep, pipe.id]
         )
     );
+    if (nextStep === "SDESIGN") await addToIFC(pipe);
     if (ok) return true;
     throw new Error("Something went wrong claiming ifd pipes");
   });
@@ -141,16 +148,17 @@ exports.nextStepService = async (data) => {
 
 exports.previousStepService = async (data) => {
   return await data.forEach(async (pipe) => {
-    const preciousStep = calculatePreviousStep(pipe.type, pipe.status)
+    const previousStep = calculatePreviousStep(pipe.type, pipe.status)
       .replace("-", "")
       .toUpperCase();
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
           "UPDATE ifd_pipes SET status = ?, owner_id = NULL WHERE id = ?",
-          [preciousStep, pipe.id]
+          [previousStep, pipe.id]
         )
     );
+    if (pipe.status === "S-Design") await removeFromIFC(pipe);
     if (ok) return true;
     throw new Error("Something went wrong claiming ifd pipes");
   });

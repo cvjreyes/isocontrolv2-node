@@ -1,5 +1,6 @@
 const pool = require("../../../config/db");
 const { send } = require("../../helpers/send");
+const { checkIfPipeExists } = require("../feed/feed.services");
 const {
   deletePipe,
   getPipesService,
@@ -15,6 +16,7 @@ const {
   getProgressService,
   getForecastService,
   addForecastService,
+  getReportPipesService,
 } = require("./ifd.services.js");
 const { progressNumbers } = require("../../helpers/progressNumbers");
 
@@ -86,6 +88,16 @@ exports.getMyPipes = async (req, res) => {
   try {
     const pipes = await getMyPipesService(user_id);
     send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getReportPipes = async (req, res) => {
+  try {
+    const report = await getReportPipesService();
+    send(res, true, report);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
@@ -164,6 +176,10 @@ exports.submitPipes = async (req, res) => {
 exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
+    for (let i = 0; i < data.length; i++) {
+      const exists = await checkIfPipeExists(data[i]);
+      if (exists) return send(res, false, "Some pipe does already exist");
+    }
     await data.forEach(async (pipe, i) => {
       await addPipesService(pipe, i);
     });

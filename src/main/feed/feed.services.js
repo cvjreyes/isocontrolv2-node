@@ -38,6 +38,11 @@ exports.getPipesService = async () => {
   return pipes;
 };
 
+exports.getReportPipesService = async () => {
+  const [report] = await pool.query("SELECT * FROM report_feed_pipes_view");
+  return report;
+};
+
 exports.getForecastService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM feed_forecast ORDER BY week DESC"
@@ -79,6 +84,21 @@ exports.updatePipesService = async (data) => {
     if (ok) return true;
     throw new Error("Something went wrong updating feed pipes");
   });
+};
+
+exports.checkIfPipeExists = async (pipe) => {
+  const [found] = await pool.query(
+    "SELECT * FROM feed_pipes_view WHERE unit = ? AND fluid = ? AND seq = ? AND area = ? AND diameter = ? AND train = ?",
+    [
+      pipe.unit,
+      pipe.fluid,
+      pipe.seq,
+      pipe.area,
+      Number(pipe.diameter),
+      pipe.train,
+    ]
+  );
+  return !!found[0];
 };
 
 exports.addPipesService = async (pipe) => {

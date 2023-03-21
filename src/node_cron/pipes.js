@@ -91,7 +91,6 @@ exports.updateLines = async () => {
     }
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 
@@ -138,7 +137,6 @@ exports.saveFEEDWeight = async () => {
     );
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 
