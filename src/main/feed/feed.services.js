@@ -38,6 +38,11 @@ exports.getPipesService = async () => {
   return pipes;
 };
 
+exports.getReportPipesService = async () => {
+  const [report] = await pool.query("SELECT * FROM report_feed_pipes_view");
+  return report;
+};
+
 exports.getForecastService = async () => {
   const [pipes] = await pool.query(
     "SELECT * FROM feed_forecast ORDER BY week DESC"

@@ -45,9 +45,7 @@ exports.getMyPipesService = async (id) => {
 };
 
 exports.getReportPipesService = async () => {
-  const [report] = await pool.query(
-    "SELECT * FROM report_ifd_pipes_view"
-  );
+  const [report] = await pool.query("SELECT * FROM report_ifd_pipes_view");
   return report;
 };
 
