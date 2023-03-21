@@ -38,11 +38,14 @@ exports.getModelledFrom3D = async () => {
           "UPDATE ifd_pipes SET status = 'MODELLED' WHERE id = ?",
           found[0].id
         );
+        await addNotification(
+          `Pipe: ${found[0].line_reference} was updated`,
+          `This pipe was marked as MODELLED`
+        );
       }
     }
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 
@@ -88,14 +91,13 @@ exports.updateLines = async () => {
     }
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 
 exports.exportModelledPipes = async () => {
   try {
     // prepare data
-    const [pipes] = await pool.query("SELECT * FROM ifd_pipes_view");
+    const [pipes] = await pool.query("SELECT * FROM feed_pipes_view");
     let data = "TAGS\nONERROR CONTINUE\n/Cpipes\n";
     pipes.forEach((pipe) => {
       data += buildRow(pipe);
@@ -112,8 +114,13 @@ exports.exportModelledPipes = async () => {
 
 exports.saveFEEDWeight = async () => {
   try {
+    const [totalLines] = await pool.query(
+      "SELECT * FROM total_lines WHERE page = 'FEED'"
+    );
     const [results] = await pool.query("SELECT status FROM feed_pipes");
-    let max_progress = results.length * 100;
+    let max_progress = totalLines[0]?.total
+      ? totalLines[0].total * 100
+      : results.length * 100;
     let progress = 0;
     for (let i = 0; i < results.length; i++) {
       if (results[i].status == "MODELLING(50%)") {
@@ -130,22 +137,25 @@ exports.saveFEEDWeight = async () => {
     );
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 
 exports.saveIFDWeight = async () => {
   try {
+    const [totalLines] = await pool.query(
+      "SELECT * FROM total_lines WHERE page = 'IFD'"
+    );
     const [results] = await pool.query(
       "SELECT calc_notes, diameter, status FROM ifd_pipes_view"
     );
     const data = fillType(results);
     const data2 = fillIFDWeight(data);
+    const totals = totalLines[0]?.total ? totalLines[0]?.total : data2.length;
     let max_progress = 0;
     let progress = 0;
-    for (let i = 0; i < data2.length; i++) {
-      max_progress += data2[i].totalWeight;
-      progress += data2[i].currentWeight;
+    for (let i = 0; i < totals; i++) {
+      max_progress += data2[i]?.totalWeight || 6;
+      progress += data2[i]?.currentWeight || 0;
     }
     await pool.query(
       "INSERT INTO ifd_progress(progress, max_progress) VALUES(?,?)",

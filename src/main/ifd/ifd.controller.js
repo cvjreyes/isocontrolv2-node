@@ -1,5 +1,6 @@
 const pool = require("../../../config/db");
 const { send } = require("../../helpers/send");
+const { checkIfPipeExists } = require("../feed/feed.services");
 const {
   deletePipe,
   getPipesService,
@@ -35,7 +36,8 @@ exports.getProgress = async (req, res) => {
     const [totalLines] = await pool.query(
       "SELECT * FROM total_lines WHERE page = 'IFD'"
     );
-    for (let i = 0; i < totalLines[0]?.total; i++) {
+    const total = totalLines[0]?.total || data.length;
+    for (let i = 0; i < total; i++) {
       let type;
       if (!data[i]?.calc_notes) {
       } else if (
@@ -163,6 +165,10 @@ exports.submitPipes = async (req, res) => {
 exports.addPipes = async (req, res) => {
   const { data } = req.body;
   try {
+    for (let i = 0; i < data.length; i++) {
+      const exists = await checkIfPipeExists(data[i]);
+      if (exists) return send(res, false, "Some pipe does already exist");
+    }
     await data.forEach(async (pipe, i) => {
       await addPipesService(pipe, i);
     });
