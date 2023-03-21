@@ -7,9 +7,9 @@ const {
 } = require("../../helpers/pipes");
 const {
   calculateNextStep,
-  formatIFDStatus,
+  formatStatus,
   calculatePreviousStep,
-} = require("../../helpers/progressNumbers");
+} = require("./progressNumbers");
 const { withTransaction } = require("../../helpers/withTransaction");
 const { addToIFC, removeFromIFC } = require("../ifc/ifc.services");
 const {
@@ -25,7 +25,7 @@ exports.getPipesService = async (trashed) => {
   const rows = fillType(resRows);
   const rowsEnd = rows.map((row) => ({
     ...row,
-    status: formatIFDStatus(row.status),
+    status: formatStatus(row.status),
   }));
   return rowsEnd;
 };
@@ -40,7 +40,7 @@ exports.getMyPipesService = async (id) => {
   const rowsEnd = rows2.map((row) => ({
     ...row,
     next_step: calculateNextStep(row.type, row.status),
-    status: formatIFDStatus(row.status),
+    status: formatStatus(row.status),
   }));
   return rowsEnd;
 };

@@ -1,5 +1,5 @@
 const fs = require("fs/promises");
-const { IFDWeight, progressNumbers } = require("../helpers/progressNumbers");
+const { IFDWeight, progressNumbers } = require("../main/ifd/progressNumbers");
 
 exports.buildRow = (pipe) => {
   return `New :Cpipes /${buildTag(pipe)} :DiametersRefFromCpipes '${
