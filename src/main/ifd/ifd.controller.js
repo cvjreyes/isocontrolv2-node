@@ -16,6 +16,7 @@ const {
   getProgressService,
   getForecastService,
   addForecastService,
+  getReportPipesService,
 } = require("./ifd.services.js");
 const { progressNumbers } = require("../../helpers/progressNumbers");
 
@@ -87,6 +88,16 @@ exports.getMyPipes = async (req, res) => {
   try {
     const pipes = await getMyPipesService(user_id);
     send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getReportPipes = async (req, res) => {
+  try {
+    const report = await getReportPipesService();
+    send(res, true, report);
   } catch (err) {
     console.error(err);
     return send(res, false, err);

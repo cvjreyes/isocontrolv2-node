@@ -44,6 +44,13 @@ exports.getMyPipesService = async (id) => {
   return rowsEnd;
 };
 
+exports.getReportPipesService = async () => {
+  const [report] = await pool.query(
+    "SELECT * FROM report_ifd_pipes_view"
+  );
+  return report;
+};
+
 exports.getPipesFromTrayService = async (status) => {
   const [resRows] = await pool.query(
     `SELECT * FROM ifd_pipes_view WHERE status LIKE '${status}%' AND trashed = 0`
