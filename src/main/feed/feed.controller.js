@@ -36,16 +36,6 @@ exports.getAllPipes = async (req, res) => {
   }
 };
 
-exports.getReportPipes = async (req, res) => {
-  try {
-    const report = await getReportPipesService();
-    send(res, true, report);
-  } catch (err) {
-    console.error(err);
-    return send(res, false, err);
-  }
-};
-
 exports.getForecast = async (req, res) => {
   //Get del forecast del feed
   try {
