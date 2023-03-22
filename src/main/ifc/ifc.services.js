@@ -1,7 +1,11 @@
 const pool = require("../../../config/db");
 const { withTransaction } = require("../../helpers/withTransaction");
 const { getAreaId, fillType, fillProgress } = require("../../helpers/pipes");
-const { formatStatus, calculateNextStep } = require("./progressNumbers");
+const {
+  formatStatus,
+  calculateNextStep,
+  calculatePreviousStep,
+} = require("./progressNumbers");
 
 exports.getPipesService = async (trashed) => {
   const [resRows] = await pool.query(
@@ -64,6 +68,23 @@ exports.nextStepService = async (data) => {
         await pool.query(
           "UPDATE ifc_pipes SET status = ?, owner_id = NULL WHERE id = ?",
           [nextStep, pipe.id]
+        )
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong claiming ifd pipes");
+  });
+};
+
+exports.previousStepService = async (data) => {
+  return await data.forEach(async (pipe) => {
+    const previousStep = calculatePreviousStep(pipe.type, pipe.status)
+      .replace("-", "")
+      .toUpperCase();
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query(
+          "UPDATE ifc_pipes SET status = ?, owner_id = NULL WHERE id = ?",
+          [previousStep, pipe.id]
         )
     );
     if (ok) return true;

@@ -20,4 +20,6 @@ router.post("/unclaim_pipes", checkAuth, controller.unclaimPipes);
 
 router.post("/next_step", checkAuth, controller.nextStep);
 
+router.post("/return", checkAuth, controller.previousStep);
+
 module.exports = router;
