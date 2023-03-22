@@ -8,8 +8,6 @@ router.get("/get_some_pipes/:trashed", checkAuth, controller.getPipes);
 
 router.get("/get_my_pipes", checkAuth, controller.getMyPipes);
 
-router.get("/get_report_pipes", checkAuth, controller.getReportPipes);
-
 router.get(
   "/get_pipes_from_tray/:status",
   checkAuth,
