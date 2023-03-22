@@ -54,6 +54,23 @@ exports.claimPipesService = async (data, user_id) => {
   });
 };
 
+exports.nextStepService = async (data) => {
+  return await data.forEach(async (pipe) => {
+    const nextStep = calculateNextStep(pipe.type, pipe.status)
+      .replace("-", "")
+      .toUpperCase();
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query(
+          "UPDATE ifc_pipes SET status = ?, owner_id = NULL WHERE id = ?",
+          [nextStep, pipe.id]
+        )
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong claiming ifd pipes");
+  });
+};
+
 exports.addToIFC = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
   await pool.query(

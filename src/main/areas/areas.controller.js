@@ -1,4 +1,3 @@
-const pool = require("../../../config/db");
 const { send } = require("../../helpers/send");
 const { getAreasService } = require("./areas.services");
 

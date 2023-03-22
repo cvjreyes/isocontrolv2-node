@@ -18,4 +18,6 @@ router.post("/claim_pipes", checkAuth, controller.claimPipes);
 
 router.post("/unclaim_pipes", checkAuth, controller.unclaimPipes);
 
+router.post("/next_step", checkAuth, controller.nextStep);
+
 module.exports = router;

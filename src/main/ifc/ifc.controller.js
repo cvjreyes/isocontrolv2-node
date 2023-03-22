@@ -4,6 +4,7 @@ const {
   getPipesFromTrayService,
   claimPipesService,
   getMyPipesService,
+  nextStepService,
 } = require("./ifc.services");
 
 exports.getProgress = async (req, res) => {
@@ -65,6 +66,17 @@ exports.unclaimPipes = async (req, res) => {
   const { data } = req.body;
   try {
     await claimPipesService(data, null);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.nextStep = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await nextStepService(data);
     send(res, true);
   } catch (err) {
     console.error(err);
