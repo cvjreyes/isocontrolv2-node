@@ -17,7 +17,7 @@ const {
   getForecastService,
   addForecastService,
 } = require("./ifd.services.js");
-const { progressNumbers } = require("../../helpers/progressNumbers");
+const { progressNumbers } = require("./progressNumbers");
 
 exports.getProgress = async (req, res) => {
   let totalWeight = 0;

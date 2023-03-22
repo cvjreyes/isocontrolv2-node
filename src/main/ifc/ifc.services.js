@@ -1,6 +1,7 @@
 const pool = require("../../../config/db");
-const { getAreaId, fillType } = require("../../helpers/pipes");
-const { formatIFCStatus } = require("../../helpers/progressNumbers");
+const { withTransaction } = require("../../helpers/withTransaction");
+const { getAreaId, fillType, fillProgress } = require("../../helpers/pipes");
+const { formatStatus, calculateNextStep } = require("./progressNumbers");
 
 exports.getPipesService = async (trashed) => {
   const [resRows] = await pool.query(
@@ -10,9 +11,47 @@ exports.getPipesService = async (trashed) => {
   const rows = fillType(resRows);
   const rowsEnd = rows.map((row) => ({
     ...row,
-    status: formatIFCStatus(row.status),
+    status: formatStatus(row.status),
   }));
   return rowsEnd;
+};
+
+exports.getMyPipesService = async (id) => {
+  const [resRows] = await pool.query(
+    "SELECT * FROM ifc_pipes_view WHERE owner_id = ? AND status <> ? AND trashed = 0",
+    [id, "ESTIMATED"]
+  );
+  const rows = fillType(resRows);
+  const rows2 = fillProgress(rows);
+  const rowsEnd = rows2.map((row) => ({
+    ...row,
+    next_step: calculateNextStep(row.type, row.status),
+    status: formatStatus(row.status),
+  }));
+  return rowsEnd;
+};
+
+exports.getPipesFromTrayService = async (status) => {
+  const [resRows] = await pool.query(
+    `SELECT * FROM ifc_pipes_view WHERE status = '${status}' AND trashed = 0`
+  );
+  const rows = fillType(resRows);
+  const rowsEnd = fillProgress(rows);
+  return rowsEnd;
+};
+
+exports.claimPipesService = async (data, user_id) => {
+  return await data.forEach(async (pipe) => {
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query("UPDATE ifc_pipes SET owner_id = ? WHERE id = ?", [
+          user_id,
+          pipe.id,
+        ])
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong claiming ifd pipes");
+  });
 };
 
 exports.addToIFC = async (pipe) => {

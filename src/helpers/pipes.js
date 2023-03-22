@@ -1,5 +1,5 @@
 const pool = require("../../config/db");
-const { progressNumbers } = require("./progressNumbers");
+const { progressNumbers } = require("../main/ifd/progressNumbers");
 
 exports.fillType = (data) => {
   for (let i = 0; i < data.length; i++) {
