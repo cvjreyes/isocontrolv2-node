@@ -1,3 +1,4 @@
+const multer = require("multer");
 const { send } = require("../../helpers/send");
 const {
   getPipesService,
@@ -6,7 +7,23 @@ const {
   getMyPipesService,
   nextStepService,
   previousStepService,
+  getPipeInfoService,
+  updatePipeService,
 } = require("./ifc.services");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "files");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const uploadFn = multer({
+  storage: storage,
+  limits: { fieldSize: "256mb" },
+}).single("file");
 
 exports.getProgress = async (req, res) => {
   try {
@@ -48,6 +65,17 @@ exports.getPipesFromTray = async (req, res) => {
   } catch (err) {
     console.error(err);
     return send(res, false, err);
+  }
+};
+
+exports.getPipeInfo = async (req, res) => {
+  const { pipe_id } = req.params;
+  try {
+    const pipe = await getPipeInfoService(pipe_id);
+    send(res, true, pipe);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
   }
 };
 
@@ -93,5 +121,38 @@ exports.previousStep = async (req, res) => {
   } catch (err) {
     console.error(err);
     return send(res, false, err);
+  }
+};
+
+exports.updatePipe = async (req, res) => {
+  const { key, val, id } = req.body;
+  try {
+    await updatePipeService(key, val, id);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.uploadFile = async (req, res) => {
+  const { pipe_id } = req.params;
+  console.log({ pipe_id });
+  try {
+    uploadFn(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        send(res, false, err);
+      } else if (err) {
+        send(res, false, err);
+      }
+      console.log({ filename: req.file.filename });
+      // here we can add filename or path to the DB
+      // const newImage = `http://localhost:5026/images/${req.file.filename}`;
+      // await addImageService(idea_id, newImage);
+      send(res, true);
+    });
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
   }
 };

@@ -44,6 +44,14 @@ exports.getPipesFromTrayService = async (status) => {
   return rowsEnd;
 };
 
+exports.getPipeInfoService = async (pipe_id) => {
+  const [pipes] = await pool.query(
+    "SELECT * FROM ifc_pipes_view WHERE id = ?",
+    pipe_id
+  );
+  return pipes[0];
+};
+
 exports.claimPipesService = async (data, user_id) => {
   return await data.forEach(async (pipe) => {
     const { ok } = await withTransaction(
@@ -110,4 +118,11 @@ exports.removeFromIFC = async (pipe) => {
     ifc_pipe[0].id
   );
   console.log(removed);
+};
+
+exports.updatePipeService = async (key, val, id) => {
+  const [updated] = await pool.query(
+    `UPDATE ifc_pipes SET ${key} = ${val} WHERE id = ${id}`
+  );
+  console.log(updated);
 };

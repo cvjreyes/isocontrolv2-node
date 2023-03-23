@@ -14,6 +14,8 @@ router.get(
   controller.getPipesFromTray
 );
 
+router.get("/get_pipe_info/:pipe_id", checkAuth, controller.getPipeInfo);
+
 router.post("/claim_pipes", checkAuth, controller.claimPipes);
 
 router.post("/unclaim_pipes", checkAuth, controller.unclaimPipes);
@@ -21,5 +23,9 @@ router.post("/unclaim_pipes", checkAuth, controller.unclaimPipes);
 router.post("/next_step", checkAuth, controller.nextStep);
 
 router.post("/return", checkAuth, controller.previousStep);
+
+router.post("/update_pipe", checkAuth, controller.updatePipe);
+
+router.post("/upload_file/:pipe_id", checkAuth, controller.uploadFile);
 
 module.exports = router;
