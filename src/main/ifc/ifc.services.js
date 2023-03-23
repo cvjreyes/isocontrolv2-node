@@ -52,6 +52,14 @@ exports.getPipeInfoService = async (pipe_id) => {
   return pipes[0];
 };
 
+exports.getFilesService = async (pipe_id) => {
+  const [files] = await pool.query(
+    "SELECT * FROM files WHERE pipe_id = ?",
+    pipe_id
+  );
+  return files;
+};
+
 exports.claimPipesService = async (data, user_id) => {
   return await data.forEach(async (pipe) => {
     const { ok } = await withTransaction(
@@ -121,8 +129,14 @@ exports.removeFromIFC = async (pipe) => {
 };
 
 exports.updatePipeService = async (key, val, id) => {
-  const [updated] = await pool.query(
-    `UPDATE ifc_pipes SET ${key} = ${val} WHERE id = ${id}`
+  await pool.query(`UPDATE ifc_pipes SET ${key} = ${val} WHERE id = ${id}`);
+};
+
+// not being used yet!
+exports.addFileService = async (pipe_id, filename, title) => {
+  const [added] = await pool.query(
+    "INSERT INTO files (pipe_id, title, filename) VALUES (?, ?, ?)",
+    [pipe_id, title, filename]
   );
-  console.log(updated);
+  console.log(added);
 };

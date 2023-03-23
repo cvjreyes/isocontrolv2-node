@@ -26,6 +26,8 @@ const apiLimiter = rateLimit({
 app.use("/users", apiLimiter);
 // app.use(apiLimiter);
 
+app.use("/files", express.static("files"));
+
 // ROUTES
 app.use("/users", require("./src/main/users/user.routes"));
 app.use("/feed", require("./src/main/feed/feed.routes"));

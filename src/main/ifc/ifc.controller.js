@@ -9,6 +9,8 @@ const {
   previousStepService,
   getPipeInfoService,
   updatePipeService,
+  getFilesService,
+  addFileService,
 } = require("./ifc.services");
 
 const storage = multer.diskStorage({
@@ -79,6 +81,17 @@ exports.getPipeInfo = async (req, res) => {
   }
 };
 
+exports.getFiles = async (req, res) => {
+  const { pipe_id } = req.params;
+  try {
+    const pipe = await getFilesService(pipe_id);
+    send(res, true, pipe);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
 exports.claimPipes = async (req, res) => {
   const { data } = req.body;
   const user_id = req.user_id;
@@ -136,8 +149,7 @@ exports.updatePipe = async (req, res) => {
 };
 
 exports.uploadFile = async (req, res) => {
-  const { pipe_id } = req.params;
-  console.log({ pipe_id });
+  const { pipe_id, title } = req.params;
   try {
     uploadFn(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
@@ -145,11 +157,9 @@ exports.uploadFile = async (req, res) => {
       } else if (err) {
         send(res, false, err);
       }
-      console.log({ filename: req.file.filename });
-      // here we can add filename or path to the DB
-      // const newImage = `http://localhost:5026/images/${req.file.filename}`;
-      // await addImageService(idea_id, newImage);
-      send(res, true);
+      const filename = req.file.filename;
+      await addFileService(pipe_id, filename, title);
+      return send(res, true);
     });
   } catch (err) {
     console.error(err);
