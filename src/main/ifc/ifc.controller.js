@@ -1,6 +1,7 @@
 const multer = require("multer");
 const { send } = require("../../helpers/send");
 const { countFilesFromPipe } = require("../files/files.services");
+const { markedAsBlockedInIFD } = require("../ifd/ifd.services");
 const {
   getPipesService,
   getPipesFromTrayService,
@@ -159,11 +160,13 @@ exports.uploadFile = async (req, res) => {
         send(res, false, err);
       }
       const numOfFiles = await countFilesFromPipe(pipe_id);
-      console.log(req.file);
       let title = "",
         filename = tag;
-      if (!numOfFiles) title = "Master";
-      else if (req.file.filename.includes("pdf")) {
+      if (!numOfFiles) {
+        title = "Master";
+        const pipe = await getPipeInfoService(pipe_id);
+        markedAsBlockedInIFD(pipe.feed_id);
+      } else if (req.file.filename.includes("pdf")) {
         title = "Clean";
         filename += "-CL";
       }

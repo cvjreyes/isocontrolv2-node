@@ -209,3 +209,11 @@ exports.deletePipe = async (id) => {
   );
   return pipes;
 };
+
+exports.markedAsBlockedInIFD = async (feed_id) => {
+  const [res] = await pool.query(
+    "UPDATE ifd_pipes SET inIFC = 1 WHERE feed_id = ?",
+    feed_id
+  );
+  console.log({ res });
+};
