@@ -159,7 +159,15 @@ exports.uploadFile = async (req, res) => {
         send(res, false, err);
       }
       const numOfFiles = await countFilesFromPipe(pipe_id);
-      const filename = tag;
+      console.log(req.file);
+      let title = "",
+        filename = tag;
+      if (!numOfFiles) title = "Master";
+      else if (req.file.filename.includes("pdf")) {
+        title = "Clean";
+        filename += "-CL";
+      }
+      filename += req.file.filename.slice(-4);
       await addFileService(pipe_id, filename, title);
       return send(res, true);
     });
