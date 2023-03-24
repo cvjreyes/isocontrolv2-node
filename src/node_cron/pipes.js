@@ -108,7 +108,6 @@ exports.exportModelledPipes = async () => {
     writeFile(data, fileName);
   } catch (err) {
     console.error(err);
-    throw err;
   }
 };
 

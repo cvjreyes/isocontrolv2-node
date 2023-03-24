@@ -121,11 +121,7 @@ exports.removeFromIFC = async (pipe) => {
     "SELECT * FROM ifc_pipes WHERE feed_id = ?",
     pipe.feed_id
   );
-  const [removed] = await pool.query(
-    "DELETE FROM ifc_pipes WHERE id = ?",
-    ifc_pipe[0].id
-  );
-  console.log(removed);
+  await pool.query("DELETE FROM ifc_pipes WHERE id = ?", ifc_pipe[0].id);
 };
 
 exports.updatePipeService = async (key, val, id) => {
@@ -134,9 +130,8 @@ exports.updatePipeService = async (key, val, id) => {
 
 // not being used yet!
 exports.addFileService = async (pipe_id, filename, title) => {
-  const [added] = await pool.query(
+  await pool.query(
     "INSERT INTO files (pipe_id, title, filename) VALUES (?, ?, ?)",
     [pipe_id, title, filename]
   );
-  console.log(added);
 };

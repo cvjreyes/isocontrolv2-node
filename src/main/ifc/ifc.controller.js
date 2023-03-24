@@ -1,5 +1,6 @@
 const multer = require("multer");
 const { send } = require("../../helpers/send");
+const { countFilesFromPipe } = require("../files/files.services");
 const {
   getPipesService,
   getPipesFromTrayService,
@@ -149,7 +150,7 @@ exports.updatePipe = async (req, res) => {
 };
 
 exports.uploadFile = async (req, res) => {
-  const { pipe_id, title } = req.params;
+  const { pipe_id, tag } = req.params;
   try {
     uploadFn(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
@@ -157,7 +158,8 @@ exports.uploadFile = async (req, res) => {
       } else if (err) {
         send(res, false, err);
       }
-      const filename = req.file.filename;
+      const numOfFiles = await countFilesFromPipe(pipe_id);
+      const filename = tag;
       await addFileService(pipe_id, filename, title);
       return send(res, true);
     });

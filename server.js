@@ -34,6 +34,7 @@ app.use("/feed", require("./src/main/feed/feed.routes"));
 app.use("/ifd", require("./src/main/ifd/ifd.routes"));
 app.use("/ifc", require("./src/main/ifc/ifc.routes"));
 app.use("/lines", require("./src/main/lines/lines.routes"));
+app.use("/files", require("./src/main/files/files.routes"));
 app.use("/areas", require("./src/main/areas/areas.routes"));
 app.use("/roles", require("./src/main/roles/roles.routes"));
 app.use("/totals", require("./src/main/totals/totals.routes"));

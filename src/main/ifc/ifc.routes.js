@@ -28,6 +28,6 @@ router.post("/return", checkAuth, controller.previousStep);
 
 router.post("/update_pipe", checkAuth, controller.updatePipe);
 
-router.post("/upload_file/:pipe_id/:title", checkAuth, controller.uploadFile);
+router.post("/upload_file/:pipe_id/:tag", checkAuth, controller.uploadFile);
 
 module.exports = router;
