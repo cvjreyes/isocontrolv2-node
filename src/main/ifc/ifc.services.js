@@ -128,7 +128,6 @@ exports.updatePipeService = async (key, val, id) => {
   await pool.query(`UPDATE ifc_pipes SET ${key} = ${val} WHERE id = ${id}`);
 };
 
-// not being used yet!
 exports.addFileService = async (pipe_id, filename, title) => {
   await pool.query(
     "INSERT INTO files (pipe_id, title, filename) VALUES (?, ?, ?)",

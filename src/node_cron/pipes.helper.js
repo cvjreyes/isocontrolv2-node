@@ -2,12 +2,12 @@ const fs = require("fs/promises");
 const { IFDWeight, progressNumbers } = require("../main/ifd/progressNumbers");
 
 exports.buildRow = (pipe) => {
-  return `New :Cpipes /${buildTag(pipe)} :DiametersRefFromCpipes '${
+  return `New :Cpipes /${this.buildTag(pipe)} :DiametersRefFromCpipes '${
     pipe.line_reference
   }' :720001MTOAREA '${pipe.area}' :720003TRAIN '${pipe.train}'\n`;
 };
 
-const buildTag = (pipe) => {
+exports.buildTag = (pipe) => {
   let tag = "";
   let tag_order = process.env.NODE_TAG_ORDER.split(/[ -]+/);
   for (let i = 0; i < tag_order.length; i++) {

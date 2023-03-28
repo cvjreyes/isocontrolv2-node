@@ -1,5 +1,6 @@
 const multer = require("multer");
 const { send } = require("../../helpers/send");
+const { buildTag } = require("../../node_cron/pipes.helper");
 const { countFilesFromPipe } = require("../files/files.services");
 const { markedAsBlockedInIFD } = require("../ifd/ifd.services");
 const {
@@ -20,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, "files");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, file.originalname);
   },
 });
 
@@ -151,27 +152,31 @@ exports.updatePipe = async (req, res) => {
 };
 
 exports.uploadFile = async (req, res) => {
-  const { pipe_id, tag } = req.params;
+  const { pipe_id, name } = req.params;
   try {
     uploadFn(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
-        send(res, false, err);
+        return send(res, false, err);
       } else if (err) {
-        send(res, false, err);
+        return send(res, false, err);
       }
+      const pipe = await getPipeInfoService(pipe_id);
+      let tag = buildTag(pipe);
+      console.log({ tag, name });
       const numOfFiles = await countFilesFromPipe(pipe_id);
-      let title = "",
-        filename = tag;
+      if (name.includes("Clean")) tag += "-CL";
+      // let title = name
+      //   filename = tag;
       if (!numOfFiles) {
-        title = "Master";
-        const pipe = await getPipeInfoService(pipe_id);
-        markedAsBlockedInIFD(pipe.feed_id);
-      } else if (req.file.filename.includes("pdf")) {
-        title = "Clean";
-        filename += "-CL";
+        //   title = "Master";
+        // const pipe = await getPipeInfoService(pipe_id);
+        await markedAsBlockedInIFD(pipe.feed_id);
+        // } else if (req.file.filename.includes("pdf")) {
+        //   title = "Clean";
+        //   filename += "-CL";
       }
-      filename += req.file.filename.slice(-4);
-      await addFileService(pipe_id, filename, title);
+      // filename += req.file.filename.slice(-4);
+      await addFileService(pipe_id, tag, name);
       return send(res, true);
     });
   } catch (err) {
