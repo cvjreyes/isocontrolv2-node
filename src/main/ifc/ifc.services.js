@@ -128,9 +128,26 @@ exports.updatePipeService = async (key, val, id) => {
   await pool.query(`UPDATE ifc_pipes SET ${key} = ${val} WHERE id = ${id}`);
 };
 
-exports.addFileService = async (pipe_id, filename, title) => {
+exports.addFileService = async (pipe_id, tag, name, filename) => {
   await pool.query(
-    "INSERT INTO files (pipe_id, title, filename) VALUES (?, ?, ?)",
-    [pipe_id, title, filename]
+    "INSERT INTO files (pipe_id, tag, title, filename) VALUES (?, ?, ?, ?)",
+    [pipe_id, tag, name, filename]
   );
+};
+
+exports.getFilenameService = async (pipe_id, title) => {
+  const [res] = await pool.query(
+    "SELECT * FROM files WHERE pipe_id = ? AND title = ?",
+    [pipe_id, title]
+  );
+  return res[0];
+};
+
+exports.updateFilenameService = async (filename, id) => {
+  console.log({ filename, id });
+  // const [updated] = await pool.query(
+  //   "UDPATE files SET filename = ? WHERE id = ?",
+  //   [filename, id]
+  // );
+  console.log(updated);
 };

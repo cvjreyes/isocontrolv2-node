@@ -1,7 +1,10 @@
 const multer = require("multer");
 const { send } = require("../../helpers/send");
 const { buildTag } = require("../../node_cron/pipes.helper");
-const { countFilesFromPipe } = require("../files/files.services");
+const {
+  countFilesFromPipe,
+  deleteFileService,
+} = require("../files/files.services");
 const { markedAsBlockedInIFD } = require("../ifd/ifd.services");
 const {
   getPipesService,
@@ -14,6 +17,8 @@ const {
   updatePipeService,
   getFilesService,
   addFileService,
+  getFilenameService,
+  updateFilenameService,
 } = require("./ifc.services");
 
 const storage = multer.diskStorage({
@@ -21,7 +26,7 @@ const storage = multer.diskStorage({
     cb(null, "files");
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
@@ -152,7 +157,7 @@ exports.updatePipe = async (req, res) => {
 };
 
 exports.uploadFile = async (req, res) => {
-  const { pipe_id, name } = req.params;
+  const { pipe_id, title } = req.params;
   try {
     uploadFn(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
@@ -162,21 +167,35 @@ exports.uploadFile = async (req, res) => {
       }
       const pipe = await getPipeInfoService(pipe_id);
       let tag = buildTag(pipe);
-      console.log({ tag, name });
       const numOfFiles = await countFilesFromPipe(pipe_id);
-      if (name.includes("Clean")) tag += "-CL";
-      // let title = name
-      //   filename = tag;
-      if (!numOfFiles) {
-        //   title = "Master";
-        // const pipe = await getPipeInfoService(pipe_id);
-        await markedAsBlockedInIFD(pipe.feed_id);
-        // } else if (req.file.filename.includes("pdf")) {
-        //   title = "Clean";
-        //   filename += "-CL";
+      if (title.includes("Clean")) tag += "-CL";
+      if (!numOfFiles) await markedAsBlockedInIFD(pipe.feed_id);
+      const filename = req.file.filename;
+      await addFileService(pipe_id, tag, title, filename);
+      return send(res, true);
+    });
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.updateFile = async (req, res) => {
+  const { pipe_id, title } = req.params;
+  try {
+    uploadFn(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return send(res, false, err);
+      } else if (err) {
+        return send(res, false, err);
       }
-      // filename += req.file.filename.slice(-4);
-      await addFileService(pipe_id, tag, name);
+      const { id } = await getFilenameService(pipe_id, title);
+      deleteFileService(id);
+
+      const pipe = await getPipeInfoService(pipe_id);
+      let tag = buildTag(pipe);
+      await addFileService(pipe_id, tag, title, req.file.filename);
+
       return send(res, true);
     });
   } catch (err) {
