@@ -36,8 +36,9 @@ exports.getMyPipesService = async (id) => {
 };
 
 exports.getPipesFromTrayService = async (status) => {
+  const queryStatus = status.replace("-", " ");
   const [resRows] = await pool.query(
-    `SELECT * FROM ifc_pipes_view WHERE status = '${status}' AND trashed = 0`
+    `SELECT * FROM ifc_pipes_view WHERE status = '${queryStatus}' AND trashed = 0`
   );
   const rows = fillType(resRows);
   const rowsEnd = fillProgress(rows);
