@@ -32,4 +32,8 @@ router.post("/upload_file/:pipe_id/:title", checkAuth, controller.uploadFile);
 
 router.post("/update_file/:pipe_id/:title", checkAuth, controller.updateFile);
 
+router.post("/restore_pipes", checkAuth, controller.restorePipes);
+
+router.post("/return_to_tray", checkAuth, controller.returnToTray);
+
 module.exports = router;

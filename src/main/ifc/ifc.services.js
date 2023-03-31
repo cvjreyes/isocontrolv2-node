@@ -143,11 +143,22 @@ exports.getFilenameService = async (pipe_id, title) => {
   return res[0];
 };
 
-exports.updateFilenameService = async (filename, id) => {
-  console.log({ filename, id });
-  // const [updated] = await pool.query(
-  //   "UDPATE files SET filename = ? WHERE id = ?",
-  //   [filename, id]
-  // );
-  console.log(updated);
+exports.restorePipesService = async (data) => {
+  return await data.forEach(async (pipe) => {
+    const { ok } = await withTransaction(
+      async () =>
+        await pool.query("UPDATE ifc_pipes SET trashed = 0 WHERE id = ?", [
+          pipe.id,
+        ])
+    );
+    if (ok) return true;
+    throw new Error("Something went wrong restoring ifd pipes");
+  });
+};
+
+exports.returnToTrayService = async (pipe_id, returnTo) => {
+  await pool.query(
+    "UPDATE ifc_pipes SET status = ?, owner_id = NULL WHERE id = ?",
+    [returnTo.toUpperCase(), pipe_id]
+  );
 };

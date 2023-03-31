@@ -18,7 +18,8 @@ const {
   getFilesService,
   addFileService,
   getFilenameService,
-  updateFilenameService,
+  restorePipesService,
+  returnToTrayService,
 } = require("./ifc.services");
 
 const storage = multer.diskStorage({
@@ -201,5 +202,27 @@ exports.updateFile = async (req, res) => {
   } catch (err) {
     console.error(err);
     send(res, false, err);
+  }
+};
+
+exports.restorePipes = async (req, res) => {
+  const { data } = req.body;
+  try {
+    await restorePipesService(data);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.returnToTray = async (req, res) => {
+  const { pipe_id, returnTo } = req.body;
+  try {
+    await returnToTrayService(pipe_id, returnTo);
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    return;
   }
 };
