@@ -82,7 +82,7 @@ exports.nextStepService = async (data) => {
     const { ok } = await withTransaction(
       async () =>
         await pool.query(
-          "UPDATE ifc_pipes SET status = ?, owner_id = NULL WHERE id = ?",
+          "UPDATE ifc_pipes SET status = ?, owner_id = NULL, toValidate = 0 WHERE id = ?",
           [nextStep, pipe.id]
         )
     );
