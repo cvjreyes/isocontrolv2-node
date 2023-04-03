@@ -23,6 +23,7 @@ const {
   revisionService,
   addToIFC,
 } = require("./ifc.services");
+const { getUserRolesService } = require("../users/user.services");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -107,8 +108,21 @@ exports.claimPipes = async (req, res) => {
   const { data } = req.body;
   const user_id = req.user_id;
   try {
+    const userRoles = await getUserRolesService(user_id);
+    const isSpecialityLead = userRoles.some(
+      (x) => x.name === "Speciality Lead"
+    );
+    const actualData = [];
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const pipe = await getPipeInfoService(row.id);
+      actualData[i] = pipe;
+    }
+    const someOwner = actualData.some((x) => x.owner_id);
+    if (someOwner && !isSpecialityLead)
+      return send(res, false, "Some pipe is already claimed");
     await claimPipesService(data, user_id);
-    send(res, true);
+    send(res, true, "Change ssaved successfully");
   } catch (err) {
     console.error(err);
     return send(res, false, err);
