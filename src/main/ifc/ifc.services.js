@@ -111,9 +111,10 @@ exports.previousStepService = async (data) => {
 
 exports.addToIFC = async (pipe) => {
   const area_id = await getAreaId(pipe.area);
+  const revision = pipe.revision + 1 || 0;
   await pool.query(
-    "INSERT INTO ifc_pipes (line_refno, feed_id, area_id, train, status) VALUES (?, ?, ?, ?, ?)",
-    [pipe.line_refno, pipe.feed_id, area_id, pipe.train, "DESIGN"]
+    "INSERT INTO ifc_pipes (line_refno, feed_id, area_id, train, status, revision) VALUES (?, ?, ?, ?, ?, ?)",
+    [pipe.line_refno, pipe.feed_id, area_id, pipe.train, "DESIGN", revision]
   );
 };
 
@@ -162,4 +163,8 @@ exports.returnToTrayService = async (pipe_id, returnTo) => {
     "UPDATE ifc_pipes SET status = ?, owner_id = NULL WHERE id = ?",
     [returnTo.toUpperCase(), pipe_id]
   );
+};
+
+exports.revisionService = async (id) => {
+  await pool.query("UPDATE ifc_pipes SET isBlocked = 1 WHERE id = ?", id);
 };

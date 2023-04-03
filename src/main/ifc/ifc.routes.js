@@ -36,4 +36,6 @@ router.post("/restore_pipes", checkAuth, controller.restorePipes);
 
 router.post("/return_to_tray", checkAuth, controller.returnToTray);
 
+router.post("/revision", checkAuth, controller.revision);
+
 module.exports = router;

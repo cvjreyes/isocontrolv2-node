@@ -44,3 +44,9 @@ Explicar:
 - status column added to estimated_pieps
 - estimated_pipes now called ifd_pipes
 - dpipes not being used?
+
+### In order to avoid GROUP BY problem:
+
+```
+SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+```
