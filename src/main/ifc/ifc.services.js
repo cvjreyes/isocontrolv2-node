@@ -1,10 +1,11 @@
 const pool = require("../../../config/db");
 const { withTransaction } = require("../../helpers/withTransaction");
-const { getAreaId, fillType, fillProgress } = require("../../helpers/pipes");
+const { getAreaId, fillType } = require("../../helpers/pipes");
 const {
   formatStatus,
   calculateNextStep,
   calculatePreviousStep,
+  fillProgress,
 } = require("./progressNumbers");
 
 exports.getPipesService = async (trashed) => {

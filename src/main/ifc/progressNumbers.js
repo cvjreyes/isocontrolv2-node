@@ -66,3 +66,17 @@ exports.IFDWeight = {
   TL2: 10,
   TL3: 20,
 };
+
+exports.fillProgress = (data) => {
+  return data.map((item) => ({
+    ...item,
+    progress:
+      this.progressNumbers[item.type][
+        item.status
+          .toLowerCase()
+          .replace("-", "")
+          .replace("*", "")
+          .replace(" ", "")
+      ],
+  }));
+};
