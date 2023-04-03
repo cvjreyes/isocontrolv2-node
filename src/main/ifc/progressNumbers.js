@@ -27,7 +27,11 @@ exports.progressNumbers = {
 
 exports.calculateNextStep = (type, status) => {
   const list = Object.keys(this.progressNumbers[type]);
-  const tempStatus = status.replace("-", "").replace("*", "").toLowerCase();
+  const tempStatus = status
+    .replace("-", "")
+    .replace("*", "")
+    .replace(" ", "")
+    .toLowerCase();
   const idx = list.findIndex((item) => tempStatus == item);
   const nextStep = list[idx] === "issued" ? "completed" : list[idx + 1];
   return this.formatStatus(nextStep);
