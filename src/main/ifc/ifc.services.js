@@ -46,6 +46,16 @@ exports.getPipesFromTrayService = async (status) => {
   return rowsEnd;
 };
 
+exports.getPipesWithActionService = async (action) => {
+  console.log(action);
+  const [resRows] = await pool.query(
+    `SELECT * FROM ifc_pipes_view WHERE ${action} = 1 AND trashed = 0`
+  );
+  const rows = fillType(resRows);
+  const rowsEnd = fillProgress(rows);
+  return rowsEnd;
+};
+
 exports.getPipeInfoService = async (pipe_id) => {
   const [pipes] = await pool.query(
     "SELECT * FROM ifc_pipes_view WHERE id = ?",

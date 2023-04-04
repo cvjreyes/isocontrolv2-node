@@ -22,6 +22,7 @@ const {
   returnToTrayService,
   revisionService,
   addToIFC,
+  getPipesWithActionService,
 } = require("./ifc.services");
 const { getUserRolesService } = require("../users/user.services");
 
@@ -75,6 +76,17 @@ exports.getPipesFromTray = async (req, res) => {
   const { status } = req.params;
   try {
     const pipes = await getPipesFromTrayService(status);
+    send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.getPipesWithAction = async (req, res) => {
+  const { action } = req.params;
+  try {
+    const pipes = await getPipesWithActionService(action);
     send(res, true, pipes);
   } catch (err) {
     console.error(err);

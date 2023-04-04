@@ -14,6 +14,12 @@ router.get(
   controller.getPipesFromTray
 );
 
+router.get(
+  "/get_pipes_with_action/:action",
+  checkAuth,
+  controller.getPipesWithAction
+);
+
 router.get("/get_pipe_info/:pipe_id", checkAuth, controller.getPipeInfo);
 
 router.get("/get_files/:pipe_id", checkAuth, controller.getFiles);
