@@ -1,3 +1,8 @@
+DOING 🔄
+
+DONE ✔:
+
 TO DO ❌:
 - revisar que las INSERT, DELETE, TRUNCATE, CREATE queries usen withTrasaction
+- replace GROUP BY `ifd`.`id` in ifd_pipes_view
 
