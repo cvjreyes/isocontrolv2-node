@@ -47,7 +47,6 @@ exports.getPipesFromTrayService = async (status) => {
 };
 
 exports.getPipesWithActionService = async (action) => {
-  console.log(action);
   const [resRows] = await pool.query(
     `SELECT * FROM ifc_pipes_view WHERE ${action} = 1 AND trashed = 0`
   );
@@ -178,4 +177,11 @@ exports.returnToTrayService = async (pipe_id, returnTo) => {
 
 exports.revisionService = async (id) => {
   await pool.query("UPDATE ifc_pipes SET isBlocked = 1 WHERE id = ?", id);
+};
+
+exports.claimProcessServices = async (user_id, pipe_id) => {
+  await pool.query("UPDATE ifc_pipes SET process_owner = ? WHERE id = ?", [
+    user_id,
+    pipe_id,
+  ]);
 };

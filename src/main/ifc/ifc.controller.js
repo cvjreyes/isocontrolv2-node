@@ -23,8 +23,12 @@ const {
   revisionService,
   addToIFC,
   getPipesWithActionService,
+  claimProcessServices,
 } = require("./ifc.services");
-const { getUserRolesService } = require("../users/user.services");
+const {
+  getUserRolesService,
+  getUserService,
+} = require("../users/user.services");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -88,6 +92,18 @@ exports.getPipesWithAction = async (req, res) => {
   try {
     const pipes = await getPipesWithActionService(action);
     send(res, true, pipes);
+  } catch (err) {
+    console.error(err);
+    return send(res, false, err);
+  }
+};
+
+exports.fillProcessOwner = async (req, res) => {
+  const { process_owner } = req.params;
+  try {
+    const user = await getUserService(process_owner);
+    console.log(user);
+    send(res, true, user);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
@@ -262,6 +278,20 @@ exports.revision = async (req, res) => {
       await revisionService(id);
       const pipe = await getPipeInfoService(id);
       await addToIFC(pipe);
+    });
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.claimProcess = async (req, res) => {
+  const { data } = req.body;
+  const { user_id } = req;
+  try {
+    data.forEach(async (pipe) => {
+      await claimProcessServices(user_id, pipe.id);
     });
     send(res, true);
   } catch (err) {

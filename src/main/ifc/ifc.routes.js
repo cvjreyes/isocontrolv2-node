@@ -20,6 +20,12 @@ router.get(
   controller.getPipesWithAction
 );
 
+router.get(
+  "/fill_process_owner/:process_owner",
+  checkAuth,
+  controller.fillProcessOwner
+);
+
 router.get("/get_pipe_info/:pipe_id", checkAuth, controller.getPipeInfo);
 
 router.get("/get_files/:pipe_id", checkAuth, controller.getFiles);
@@ -43,5 +49,7 @@ router.post("/restore_pipes", checkAuth, controller.restorePipes);
 router.post("/return_to_tray", checkAuth, controller.returnToTray);
 
 router.post("/revision", checkAuth, controller.revision);
+
+router.post("/claim_process", checkAuth, controller.claimProcess);
 
 module.exports = router;
