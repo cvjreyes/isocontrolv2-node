@@ -24,6 +24,7 @@ const {
   addToIFC,
   getPipesWithActionService,
   claimProcessServices,
+  updateProcessService,
 } = require("./ifc.services");
 const {
   getUserRolesService,
@@ -102,7 +103,6 @@ exports.fillProcessOwner = async (req, res) => {
   const { process_owner } = req.params;
   try {
     const user = await getUserService(process_owner);
-    console.log(user);
     send(res, true, user);
   } catch (err) {
     console.error(err);
@@ -217,6 +217,31 @@ exports.uploadFile = async (req, res) => {
       if (!numOfFiles) await markedAsBlockedInIFD(pipe.feed_id);
       const filename = req.file.filename;
       await addFileService(pipe_id, tag, title, filename);
+      return send(res, true);
+    });
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.uploadProcessFile = async (req, res) => {
+  const { pipe_id, title, approved } = req.params;
+  try {
+    uploadFn(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return send(res, false, err);
+      } else if (err) {
+        return send(res, false, err);
+      }
+      const pipe = await getPipeInfoService(pipe_id);
+      let tag = buildTag(pipe);
+      const numOfFiles = await countFilesFromPipe(pipe_id);
+      if (title.includes("Clean")) tag += "-CL";
+      if (!numOfFiles) await markedAsBlockedInIFD(pipe.feed_id);
+      const filename = req.file.filename;
+      await addFileService(pipe_id, tag, title, filename);
+      updateProcessService(approved, pipe.id);
       return send(res, true);
     });
   } catch (err) {

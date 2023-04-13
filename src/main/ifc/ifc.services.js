@@ -147,6 +147,13 @@ exports.addFileService = async (pipe_id, tag, name, filename) => {
   );
 };
 
+exports.updateProcessService = async (bool, id) => {
+  await pool.query(
+    "UPDATE ifc_pipes SET is_process_accepted = ?, process = 0, process_owner = NULL WHERE id = ?",
+    [bool, id]
+  );
+};
+
 exports.getFilenameService = async (pipe_id, title) => {
   const [res] = await pool.query(
     "SELECT * FROM files WHERE pipe_id = ? AND title = ?",

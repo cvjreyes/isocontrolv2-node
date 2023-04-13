@@ -42,6 +42,12 @@ router.post("/update_pipe", checkAuth, controller.updatePipe);
 
 router.post("/upload_file/:pipe_id/:title", checkAuth, controller.uploadFile);
 
+router.post(
+  "/upload_file/:pipe_id/:title/:approved",
+  checkAuth,
+  controller.uploadProcessFile
+);
+
 router.post("/update_file/:pipe_id/:title", checkAuth, controller.updateFile);
 
 router.post("/restore_pipes", checkAuth, controller.restorePipes);
