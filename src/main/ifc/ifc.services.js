@@ -192,3 +192,10 @@ exports.claimProcessServices = async (user_id, pipe_id) => {
     pipe_id,
   ]);
 };
+
+exports.unclaimProcessServices = async (pipe_id) => {
+  await pool.query(
+    "UPDATE ifc_pipes SET process_owner = NULL WHERE id = ?",
+    pipe_id
+  );
+};
