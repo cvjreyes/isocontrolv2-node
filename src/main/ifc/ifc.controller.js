@@ -172,8 +172,7 @@ exports.unclaimPipes = async (req, res) => {
 exports.nextStep = async (req, res) => {
   const { data } = req.body;
   try {
-    await nextStepService(data);
-    send(res, true);
+    await nextStepService(data, res);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
