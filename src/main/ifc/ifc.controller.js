@@ -25,6 +25,7 @@ const {
   getPipesWithActionService,
   claimProcessServices,
   updateProcessService,
+  unclaimProcessServices,
 } = require("./ifc.services");
 const {
   getUserRolesService,
@@ -171,8 +172,7 @@ exports.unclaimPipes = async (req, res) => {
 exports.nextStep = async (req, res) => {
   const { data } = req.body;
   try {
-    await nextStepService(data);
-    send(res, true);
+    await nextStepService(data, res);
   } catch (err) {
     console.error(err);
     return send(res, false, err);
@@ -318,6 +318,17 @@ exports.claimProcess = async (req, res) => {
     data.forEach(async (pipe) => {
       await claimProcessServices(user_id, pipe.id);
     });
+    send(res, true);
+  } catch (err) {
+    console.error(err);
+    send(res, false, err);
+  }
+};
+
+exports.unclaimProcess = async (req, res) => {
+  const { pipe_id } = req.params;
+  try {
+    await unclaimProcessServices(pipe_id);
     send(res, true);
   } catch (err) {
     console.error(err);

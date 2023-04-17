@@ -7,6 +7,7 @@ const {
   calculatePreviousStep,
   fillProgress,
 } = require("./progressNumbers");
+const { send } = require("../../helpers/send");
 
 exports.getPipesService = async (trashed) => {
   const [resRows] = await pool.query(
@@ -85,21 +86,34 @@ exports.claimPipesService = async (data, user_id) => {
   });
 };
 
-exports.nextStepService = async (data) => {
-  return await data.forEach(async (pipe) => {
+exports.nextStepService = async (data, res) => {
+  let isError = false;
+  for (let i = 0; i < data.length; i++) {
+    const pipe = data[i];
+    // check if pipe has master attached
+    const [master] = await pool.query(
+      "SELECT * FROM files WHERE pipe_id = ? AND title = 'master'",
+      pipe.id
+    );
+    if (!master[0]) {
+      isError = true;
+      return send(res, false, "Pipe needs master file");
+    }
     const nextStep = calculateNextStep(pipe.type, pipe.status)
       .replace("-", "")
       .toUpperCase();
-    const { ok } = await withTransaction(
+    await withTransaction(
       async () =>
         await pool.query(
           "UPDATE ifc_pipes SET status = ?, owner_id = NULL, toValidate = 0 WHERE id = ?",
           [nextStep, pipe.id]
         )
     );
-    if (ok) return true;
-    throw new Error("Something went wrong claiming ifd pipes");
-  });
+    // if (ok) return true;
+    // throw new Error("Something went wrong claiming ifd pipes");
+  }
+  console.log({ isError });
+  !isError && send(res, true);
 };
 
 exports.previousStepService = async (data) => {
@@ -191,4 +205,11 @@ exports.claimProcessServices = async (user_id, pipe_id) => {
     user_id,
     pipe_id,
   ]);
+};
+
+exports.unclaimProcessServices = async (pipe_id) => {
+  await pool.query(
+    "UPDATE ifc_pipes SET process_owner = NULL WHERE id = ?",
+    pipe_id
+  );
 };

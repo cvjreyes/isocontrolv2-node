@@ -58,4 +58,6 @@ router.post("/revision", checkAuth, controller.revision);
 
 router.post("/claim_process", checkAuth, controller.claimProcess);
 
+router.post("/unclaim_process/:pipe_id", checkAuth, controller.unclaimProcess);
+
 module.exports = router;
